@@ -53,7 +53,7 @@ export interface NexusGenInputs {
 }
 
 export interface NexusGenEnums {
-  AccountBalanceType: "DEPOSIT" | "WITHDRAW"
+  BalanceType: "DEPOSIT" | "WITHDRAW"
   Role: "ADMIN" | "USER"
   TradeType: "BUY" | "SELL"
 }
@@ -69,15 +69,15 @@ export interface NexusGenScalars {
 }
 
 export interface NexusGenObjects {
-  AccountBalance: { // root type
+  AuthPayload: { // root type
+    token: string; // String!
+    user: NexusGenRootTypes['User']; // User!
+  }
+  Balance: { // root type
     amount: number; // Float!
     id: string; // ID!
     timestamp: NexusGenScalars['DateTime']; // DateTime!
-    type: NexusGenEnums['AccountBalanceType']; // AccountBalanceType!
-    user: NexusGenRootTypes['User']; // User!
-  }
-  AuthPayload: { // root type
-    token: string; // String!
+    type: NexusGenEnums['BalanceType']; // BalanceType!
     user: NexusGenRootTypes['User']; // User!
   }
   Mutation: {};
@@ -109,15 +109,15 @@ export type NexusGenRootTypes = NexusGenObjects
 export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars & NexusGenEnums
 
 export interface NexusGenFieldTypes {
-  AccountBalance: { // field return type
+  AuthPayload: { // field return type
+    token: string; // String!
+    user: NexusGenRootTypes['User']; // User!
+  }
+  Balance: { // field return type
     amount: number; // Float!
     id: string; // ID!
     timestamp: NexusGenScalars['DateTime']; // DateTime!
-    type: NexusGenEnums['AccountBalanceType']; // AccountBalanceType!
-    user: NexusGenRootTypes['User']; // User!
-  }
-  AuthPayload: { // field return type
-    token: string; // String!
+    type: NexusGenEnums['BalanceType']; // BalanceType!
     user: NexusGenRootTypes['User']; // User!
   }
   Mutation: { // field return type
@@ -149,15 +149,15 @@ export interface NexusGenFieldTypes {
 }
 
 export interface NexusGenFieldTypeNames {
-  AccountBalance: { // field return type name
+  AuthPayload: { // field return type name
+    token: 'String'
+    user: 'User'
+  }
+  Balance: { // field return type name
     amount: 'Float'
     id: 'ID'
     timestamp: 'DateTime'
-    type: 'AccountBalanceType'
-    user: 'User'
-  }
-  AuthPayload: { // field return type name
-    token: 'String'
+    type: 'BalanceType'
     user: 'User'
   }
   Mutation: { // field return type name

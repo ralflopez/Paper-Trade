@@ -7,8 +7,8 @@ export * from "./auth/AuthPayload"
 export * from "./auth/authInput"
 export * from "./auth/authResolver"
 
-export * from "./accountBalance/AccountBalance"
 export * from "./trade/Trade"
+export * from "./balance/Balance"
 
 // scalars
 export * from "./scalar/DateTime"
@@ -17,4 +17,4 @@ export * from "./scalar/Email"
 // enums
 export * from "./enum/Role"
 export * from "./enum/TradeType"
-export * from "./enum/AccountBalanceType"
+export * from "./enum/BalanceType"

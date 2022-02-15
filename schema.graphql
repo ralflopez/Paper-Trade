@@ -2,25 +2,25 @@
 ### Do not make changes to this file directly
 
 
-"""Keeps track of the total balance deposited to the users account"""
-type AccountBalance {
-  amount: Float!
-  id: ID!
-  timestamp: DateTime!
-  type: AccountBalanceType!
-  user: User!
-}
-
-"""WITHDRAW / DEPOSIT"""
-enum AccountBalanceType {
-  DEPOSIT
-  WITHDRAW
-}
-
 """Return data for authenticated users"""
 type AuthPayload {
   token: String!
   user: User!
+}
+
+"""Keeps track of the total balance deposited to the users account"""
+type Balance {
+  amount: Float!
+  id: ID!
+  timestamp: DateTime!
+  type: BalanceType!
+  user: User!
+}
+
+"""WITHDRAW / DEPOSIT"""
+enum BalanceType {
+  DEPOSIT
+  WITHDRAW
 }
 
 """
