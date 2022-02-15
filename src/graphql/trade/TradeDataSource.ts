@@ -4,6 +4,7 @@ import { DataSource, DataSourceConfig } from "apollo-datasource"
 import { ApolloError, UserInputError } from "apollo-server-errors"
 import { Context } from "../../config/context"
 import { CrudDataSource, DatasourceConstructor } from "../../types/datasource"
+import { TradePortfolioSummary } from "./trade-type"
 
 export class TradeDataSource extends DataSource implements CrudDataSource {
   context?: Context
@@ -37,8 +38,8 @@ export class TradeDataSource extends DataSource implements CrudDataSource {
     })
   }
 
-  async getPortfolio(userId: string) {
-    return await this.prisma.trade.groupBy({
+  async getPortfolio(userId: string): Promise<TradePortfolioSummary[]> {
+    const result = await this.prisma.trade.groupBy({
       by: ["coinId"],
       where: {
         userId,
@@ -48,6 +49,15 @@ export class TradeDataSource extends DataSource implements CrudDataSource {
         value: true,
       },
     })
+
+    const data: TradePortfolioSummary[] = result.map((r) => {
+      return {
+        amount: r._sum.amount as number,
+        coinId: r.coinId,
+      } as TradePortfolioSummary
+    })
+
+    return data
   }
 
   async createOne(
