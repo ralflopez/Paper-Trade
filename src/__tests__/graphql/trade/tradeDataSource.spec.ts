@@ -2,7 +2,7 @@ import {
   MockContext,
   createMockContext,
 } from "../../../config/prisma/testClient"
-import { TradeDataSource } from "../../../graphql/trade/TradeDataSource"
+import { TradeDataSource } from "../../../graphql/trade/tradeDataSource"
 import { Trade, TradeType } from "@prisma/client"
 
 let mockCtx: MockContext

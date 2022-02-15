@@ -1,6 +1,6 @@
 import { prisma } from "../../../config/prisma/client"
 import { TradePortfolioSummary } from "../../../graphql/trade/trade-type"
-import { TradeDataSource } from "../../../graphql/trade/TradeDataSource"
+import { TradeDataSource } from "../../../graphql/trade/tradeDataSource"
 
 let tradeDataSource: TradeDataSource
 

@@ -33,7 +33,7 @@ model User {
   password  String    @db.VarChar(255)
   role      Role      @default(USER)
   Trade     Trade[]
-  balance   balance[]
+  Balance   Balance[]
 }
 
 model Trade {
@@ -47,7 +47,7 @@ model Trade {
   value     Float
 }
 
-model balance {
+model Balance {
   id        String      @id @default(cuid())
   timestamp DateTime    @default(now())
   type      BalanceType
