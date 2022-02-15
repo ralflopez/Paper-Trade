@@ -20,7 +20,7 @@ enum TradeType {
   SELL
 }
 
-enum AccountDepositType {
+enum AccountBalanceType {
   WITHDRAW
   DEPOSIT
 }
@@ -33,7 +33,7 @@ model User {
   password       String           @db.VarChar(255)
   role           Role             @default(USER)
   Trade          Trade[]
-  AccountDeposit AccountDeposit[]
+  AccountBalance AccountBalance[]
 }
 
 model Trade {
@@ -47,10 +47,10 @@ model Trade {
   boughtValue Float
 }
 
-model AccountDeposit {
+model AccountBalance {
   id        String             @id @default(cuid())
   timestamp DateTime           @default(now())
-  type      AccountDepositType
+  type      AccountBalanceType
   userId    String
   user      User               @relation(fields: [userId], references: [id])
   amount    Float
