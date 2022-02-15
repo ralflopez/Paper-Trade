@@ -2,6 +2,15 @@
 ### Do not make changes to this file directly
 
 
+"""Keeps track of the total balance deposited to the users account"""
+type AccountBalance {
+  amount: Float!
+  id: ID!
+  timestamp: DateTime!
+  type: AccountBalanceType!
+  user: User!
+}
+
 """WITHDRAW / DEPOSIT"""
 enum AccountBalanceType {
   DEPOSIT
@@ -55,6 +64,17 @@ input SignupInput {
   email: String!
   password: String!
   repeatPassword: String!
+}
+
+"""Records buy and sell information of cryptos"""
+type Trade {
+  User: User!
+  amount: Float!
+  boughtValue: Float!
+  coinId: String!
+  id: ID!
+  timestamp: DateTime!
+  type: TradeType!
 }
 
 """Buy / Sell"""

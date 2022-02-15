@@ -69,12 +69,28 @@ export interface NexusGenScalars {
 }
 
 export interface NexusGenObjects {
+  AccountBalance: { // root type
+    amount: number; // Float!
+    id: string; // ID!
+    timestamp: NexusGenScalars['DateTime']; // DateTime!
+    type: NexusGenEnums['AccountBalanceType']; // AccountBalanceType!
+    user: NexusGenRootTypes['User']; // User!
+  }
   AuthPayload: { // root type
     token: string; // String!
     user: NexusGenRootTypes['User']; // User!
   }
   Mutation: {};
   Query: {};
+  Trade: { // root type
+    User: NexusGenRootTypes['User']; // User!
+    amount: number; // Float!
+    boughtValue: number; // Float!
+    coinId: string; // String!
+    id: string; // ID!
+    timestamp: NexusGenScalars['DateTime']; // DateTime!
+    type: NexusGenEnums['TradeType']; // TradeType!
+  }
   User: { // root type
     email: NexusGenScalars['EmailAddress']; // EmailAddress!
     id: string; // ID!
@@ -93,6 +109,13 @@ export type NexusGenRootTypes = NexusGenObjects
 export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars & NexusGenEnums
 
 export interface NexusGenFieldTypes {
+  AccountBalance: { // field return type
+    amount: number; // Float!
+    id: string; // ID!
+    timestamp: NexusGenScalars['DateTime']; // DateTime!
+    type: NexusGenEnums['AccountBalanceType']; // AccountBalanceType!
+    user: NexusGenRootTypes['User']; // User!
+  }
   AuthPayload: { // field return type
     token: string; // String!
     user: NexusGenRootTypes['User']; // User!
@@ -109,6 +132,15 @@ export interface NexusGenFieldTypes {
     getUsers: NexusGenRootTypes['User'][]; // [User!]!
     refreshToken: NexusGenRootTypes['AuthPayload'] | null; // AuthPayload
   }
+  Trade: { // field return type
+    User: NexusGenRootTypes['User']; // User!
+    amount: number; // Float!
+    boughtValue: number; // Float!
+    coinId: string; // String!
+    id: string; // ID!
+    timestamp: NexusGenScalars['DateTime']; // DateTime!
+    type: NexusGenEnums['TradeType']; // TradeType!
+  }
   User: { // field return type
     email: NexusGenScalars['EmailAddress']; // EmailAddress!
     id: string; // ID!
@@ -117,6 +149,13 @@ export interface NexusGenFieldTypes {
 }
 
 export interface NexusGenFieldTypeNames {
+  AccountBalance: { // field return type name
+    amount: 'Float'
+    id: 'ID'
+    timestamp: 'DateTime'
+    type: 'AccountBalanceType'
+    user: 'User'
+  }
   AuthPayload: { // field return type name
     token: 'String'
     user: 'User'
@@ -132,6 +171,15 @@ export interface NexusGenFieldTypeNames {
     getUser: 'User'
     getUsers: 'User'
     refreshToken: 'AuthPayload'
+  }
+  Trade: { // field return type name
+    User: 'User'
+    amount: 'Float'
+    boughtValue: 'Float'
+    coinId: 'String'
+    id: 'ID'
+    timestamp: 'DateTime'
+    type: 'TradeType'
   }
   User: { // field return type name
     email: 'EmailAddress'
