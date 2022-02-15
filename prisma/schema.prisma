@@ -37,14 +37,14 @@ model User {
 }
 
 model Trade {
-  id          String    @id @default(cuid())
-  timestamp   DateTime  @default(now())
-  userId      String
-  user        User      @relation(fields: [userId], references: [id])
-  coinId      String
-  amount      Float
-  type        TradeType
-  boughtValue Float
+  id        String    @id @default(cuid())
+  timestamp DateTime  @default(now())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id])
+  coinId    String
+  amount    Float
+  type      TradeType
+  value     Float
 }
 
 model AccountBalance {
