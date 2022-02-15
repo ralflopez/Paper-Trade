@@ -10,7 +10,7 @@ export const Trade = objectType({
       type: "User",
     })
     t.nonNull.string("coinId"), t.nonNull.float("amount")
-    t.nonNull.field("TradeType", {
+    t.nonNull.field("type", {
       type: "TradeType",
     })
     t.nonNull.float("boughtValue")

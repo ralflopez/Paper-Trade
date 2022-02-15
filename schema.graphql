@@ -2,6 +2,12 @@
 ### Do not make changes to this file directly
 
 
+"""WITHDRAW / DEPOSIT"""
+enum AccountBalanceType {
+  DEPOSIT
+  WITHDRAW
+}
+
 """Return data for authenticated users"""
 type AuthPayload {
   token: String!

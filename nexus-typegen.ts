@@ -53,6 +53,7 @@ export interface NexusGenInputs {
 }
 
 export interface NexusGenEnums {
+  AccountBalanceType: "DEPOSIT" | "WITHDRAW"
   Role: "ADMIN" | "USER"
   TradeType: "BUY" | "SELL"
 }
