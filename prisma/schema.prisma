@@ -1,0 +1,57 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum TradeType {
+  BUY
+  SELL
+}
+
+enum AccountDepositType {
+  WITHDRAW
+  DEPOSIT
+}
+
+model User {
+  id             String           @id @default(cuid())
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  email          String           @db.VarChar(200)
+  password       String           @db.VarChar(255)
+  role           Role             @default(USER)
+  Trade          Trade[]
+  AccountDeposit AccountDeposit[]
+}
+
+model Trade {
+  id          String    @id @default(cuid())
+  timestamp   DateTime  @default(now())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id])
+  coinId      String
+  amount      Float
+  type        TradeType
+  boughtValue Float
+}
+
+model AccountDeposit {
+  id        String             @id @default(cuid())
+  timestamp DateTime           @default(now())
+  type      AccountDepositType
+  userId    String
+  user      User               @relation(fields: [userId], references: [id])
+  amount    Float
+}
