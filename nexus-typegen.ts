@@ -54,6 +54,7 @@ export interface NexusGenInputs {
 
 export interface NexusGenEnums {
   Role: "ADMIN" | "USER"
+  TradeType: "BUY" | "SELL"
 }
 
 export interface NexusGenScalars {

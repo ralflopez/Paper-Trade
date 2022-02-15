@@ -14,3 +14,4 @@ export * from "./scalar/Email"
 
 // enums
 export * from "./enum/Role"
+export * from "./enum/TradeType"

@@ -51,6 +51,12 @@ input SignupInput {
   repeatPassword: String!
 }
 
+"""Buy / Sell"""
+enum TradeType {
+  BUY
+  SELL
+}
+
 """User model from the database"""
 type User {
   email: EmailAddress!
