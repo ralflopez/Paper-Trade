@@ -23,6 +23,7 @@ enum TradeType {
 enum BalanceType {
   WITHDRAW
   DEPOSIT
+  TRADE
 }
 
 model User {
