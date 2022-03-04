@@ -49,7 +49,8 @@ export const UserUpdate = mutationField("updateUser", {
     return context.dataSources.user.updateOne(
       args.id,
       args.data.email,
-      args.data.password
+      args.data.password,
+      args.data.name
     )
   },
 })

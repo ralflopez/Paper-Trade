@@ -23,7 +23,12 @@ export class UserDataSource extends DataSource implements CrudDataSource {
 
   async getMany(): Promise<User[]> {
     const result: PrismaUser[] = await this.prisma.user.findMany()
-    return result.map((u) => ({ id: u.id, role: u.role, email: u.email }))
+    return result.map((u) => ({
+      id: u.id,
+      role: u.role,
+      email: u.email,
+      name: u.name,
+    }))
   }
 
   async getOne(id: string): Promise<User> {
@@ -57,12 +62,17 @@ export class UserDataSource extends DataSource implements CrudDataSource {
 
     return {
       id: user.id,
+      name: user.name,
       email: user.email,
       role: user?.role,
     } as User
   }
 
-  async createOne(email: string, password: string): Promise<User> {
+  async createOne(
+    email: string,
+    password: string,
+    name: string
+  ): Promise<User> {
     let user: PrismaUser
     const hashPassword = await bcrypt.hash(password, 10)
 
@@ -70,6 +80,7 @@ export class UserDataSource extends DataSource implements CrudDataSource {
       user = await this.prisma.user.create({
         data: {
           email,
+          name,
           password: hashPassword,
         },
       })
@@ -88,12 +99,18 @@ export class UserDataSource extends DataSource implements CrudDataSource {
     } as User
   }
 
-  async updateOne(id: string, email: string, password: string): Promise<User> {
+  async updateOne(
+    id: string,
+    email: string,
+    password: string,
+    name: string
+  ): Promise<User> {
     const hashed = await bcrypt.hash(password, 10)
     return await this.prisma.user.update({
       where: { id },
       data: {
         email,
+        name,
         password: hashed,
       },
     })

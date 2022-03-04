@@ -20,6 +20,8 @@ type Balance {
 """WITHDRAW / DEPOSIT"""
 enum BalanceType {
   DEPOSIT
+  TRADE
+  UNTRADE
   WITHDRAW
 }
 
@@ -62,6 +64,7 @@ enum Role {
 """Required data to make an account"""
 input SignupInput {
   email: String!
+  name: String!
   password: String!
   repeatPassword: String!
 }
@@ -87,10 +90,12 @@ enum TradeType {
 type User {
   email: EmailAddress!
   id: ID!
+  name: String!
   role: Role!
 }
 
 input UserUpdateInput {
   email: EmailAddress!
+  name: String!
   password: String!
 }

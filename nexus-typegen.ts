@@ -43,17 +43,19 @@ export interface NexusGenInputs {
   }
   SignupInput: { // input type
     email: string; // String!
+    name: string; // String!
     password: string; // String!
     repeatPassword: string; // String!
   }
   UserUpdateInput: { // input type
     email: NexusGenScalars['EmailAddress']; // EmailAddress!
+    name: string; // String!
     password: string; // String!
   }
 }
 
 export interface NexusGenEnums {
-  BalanceType: "DEPOSIT" | "WITHDRAW"
+  BalanceType: "DEPOSIT" | "TRADE" | "UNTRADE" | "WITHDRAW"
   Role: "ADMIN" | "USER"
   TradeType: "BUY" | "SELL"
 }
@@ -94,6 +96,7 @@ export interface NexusGenObjects {
   User: { // root type
     email: NexusGenScalars['EmailAddress']; // EmailAddress!
     id: string; // ID!
+    name: string; // String!
     role: NexusGenEnums['Role']; // Role!
   }
 }
@@ -144,6 +147,7 @@ export interface NexusGenFieldTypes {
   User: { // field return type
     email: NexusGenScalars['EmailAddress']; // EmailAddress!
     id: string; // ID!
+    name: string; // String!
     role: NexusGenEnums['Role']; // Role!
   }
 }
@@ -184,6 +188,7 @@ export interface NexusGenFieldTypeNames {
   User: { // field return type name
     email: 'EmailAddress'
     id: 'ID'
+    name: 'String'
     role: 'Role'
   }
 }

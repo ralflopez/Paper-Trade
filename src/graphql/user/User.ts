@@ -5,6 +5,7 @@ export const User = objectType({
   description: "User model from the database",
   definition(t) {
     t.nonNull.id("id")
+    t.nonNull.string("name")
     t.nonNull.email("email")
     t.nonNull.field("role", {
       type: "Role",

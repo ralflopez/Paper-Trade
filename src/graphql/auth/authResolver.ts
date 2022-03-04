@@ -35,9 +35,10 @@ export const signupMutation = mutationField("signup", {
     data: nonNull("SignupInput"),
   },
   resolve: async (_parent, args, context): Promise<AuthPayload> => {
-    const user: User = await context.dataSources.user.getOneByEmailAndPassword(
+    const user: User = await context.dataSources.user.createOne(
       args.data.email,
-      args.data.password
+      args.data.password,
+      args.data.name
     )
 
     const { accessToken } = await createTokens({ userId: user.id }, context)
@@ -57,11 +58,14 @@ export const loginMutation = mutationField("login", {
     data: nonNull("LoginInput"),
   },
   resolve: async (_parent, args, context): Promise<AuthPayload> => {
-    const user: User = await context.dataSources.user.createOne(
+    const user: User = await context.dataSources.user.getOneByEmailAndPassword(
       args.data.email,
       args.data.password
     )
+
     const { accessToken } = await createTokens({ userId: user.id }, context)
+
+    context.user = user
 
     return {
       user: user,

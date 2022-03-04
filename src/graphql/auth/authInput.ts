@@ -4,6 +4,7 @@ export const SignupInput = inputObjectType({
   name: "SignupInput",
   description: "Required data to make an account",
   definition(t) {
+    t.nonNull.string("name")
     t.nonNull.string("email")
     t.nonNull.string("password")
     t.nonNull.string("repeatPassword")
