@@ -1,4 +1,5 @@
 import { objectType } from "nexus"
+import { Context } from "../../config/context"
 
 export const Trade = objectType({
   name: "Trade",
@@ -6,8 +7,13 @@ export const Trade = objectType({
   definition(t) {
     t.nonNull.id("id")
     t.nonNull.datetime("timestamp")
-    t.nonNull.field("User", {
+    t.nonNull.string("userId")
+    t.nonNull.field("user", {
       type: "User",
+      resolve: async (parent, _args, context: Context) => {
+        const user = await context.dataSources.user.getOne(parent.userId)
+        return user
+      },
     })
     t.nonNull.string("coinId"), t.nonNull.float("amount")
     t.nonNull.field("type", {

@@ -1,4 +1,5 @@
 import { objectType } from "nexus"
+import { Context } from "../../config/context"
 
 export const Balance = objectType({
   name: "Balance",
@@ -10,8 +11,13 @@ export const Balance = objectType({
     t.nonNull.field("type", {
       type: "BalanceType",
     })
+    t.nonNull.string("userId")
     t.nonNull.field("user", {
       type: "User",
+      resolve: async (parent, _args, context: Context) => {
+        const user = await context.dataSources.user.getOne(parent.userId)
+        return user
+      },
     })
     t.nonNull.float("amount")
   },
