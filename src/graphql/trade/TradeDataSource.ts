@@ -6,7 +6,10 @@ import { Context } from "../../config/context"
 import { CrudDataSource, DatasourceConstructor } from "../../types/datasource"
 import { TradePortfolioSummary } from "./trade-type"
 
-export class TradeDataSource extends DataSource implements CrudDataSource {
+export class TradeDataSource
+  extends DataSource
+  implements Partial<CrudDataSource>
+{
   context?: Context
   prisma: PrismaClient
 
@@ -68,7 +71,7 @@ export class TradeDataSource extends DataSource implements CrudDataSource {
     userId: string
   ): Promise<Trade> {
     try {
-      const user = await this.prisma.trade.create({
+      const trade = await this.prisma.trade.create({
         data: {
           amount,
           value,
@@ -78,7 +81,7 @@ export class TradeDataSource extends DataSource implements CrudDataSource {
         },
       })
 
-      return user
+      return trade
     } catch (e) {
       if (e instanceof PrismaClientKnownRequestError) {
         throw new UserInputError("Trade already exists")
@@ -86,13 +89,5 @@ export class TradeDataSource extends DataSource implements CrudDataSource {
         throw new UserInputError("Error creating a new user")
       }
     }
-  }
-
-  async deleteOne() {
-    return null
-  }
-
-  async updateOne() {
-    return null
   }
 }
