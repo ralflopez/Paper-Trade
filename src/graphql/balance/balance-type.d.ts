@@ -1,6 +1,6 @@
 interface BalanceTypeInfo {
   amount: number
-  type: "WITHDRAW" | "DEPOSIT" | "TRADE" | "UNTRADE"
+  type: "WITHDRAW" | "DEPOSIT"
 }
 
 interface BalanceSummary {
