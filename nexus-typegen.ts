@@ -45,7 +45,6 @@ export interface NexusGenInputs {
     email: string; // String!
     name: string; // String!
     password: string; // String!
-    repeatPassword: string; // String!
   }
   UserUpdateInput: { // input type
     email: NexusGenScalars['EmailAddress']; // EmailAddress!
@@ -133,6 +132,7 @@ export interface NexusGenFieldTypes {
     getMyUser: NexusGenRootTypes['User'] | null; // User
     getUser: NexusGenRootTypes['User'] | null; // User
     getUsers: NexusGenRootTypes['User'][]; // [User!]!
+    logout: boolean | null; // Boolean
     refreshToken: NexusGenRootTypes['AuthPayload'] | null; // AuthPayload
   }
   Trade: { // field return type
@@ -174,6 +174,7 @@ export interface NexusGenFieldTypeNames {
     getMyUser: 'User'
     getUser: 'User'
     getUsers: 'User'
+    logout: 'Boolean'
     refreshToken: 'AuthPayload'
   }
   Trade: { // field return type name

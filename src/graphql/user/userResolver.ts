@@ -23,7 +23,6 @@ export const UserSelfQuery = queryField("getMyUser", {
   type: "User",
   resolve(_parent, _args, context) {
     if (!context.user?.id) throw new AuthenticationError("User ID not found")
-
     return context.dataSources.user.getOne(context.user?.id)
   },
 })

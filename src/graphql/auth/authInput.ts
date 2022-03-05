@@ -7,7 +7,6 @@ export const SignupInput = inputObjectType({
     t.nonNull.string("name")
     t.nonNull.string("email")
     t.nonNull.string("password")
-    t.nonNull.string("repeatPassword")
   },
 })
 

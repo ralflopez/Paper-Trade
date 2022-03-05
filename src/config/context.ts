@@ -1,26 +1,48 @@
-import {ExpressContext} from "apollo-server-express"
-import {UserDataSource} from "../graphql/user/userDataSource";
-import {prisma} from './prisma/client'
-import {Request, Response} from "express";
-import {IDateSources} from "../types/datasource";
+import { ExpressContext } from "apollo-server-express"
+import { UserDataSource } from "../graphql/user/userDataSource"
+import { prisma } from "./prisma/client"
+import { Request, Response } from "express"
+import { IDateSources } from "../types/datasource"
+import { getUserId } from "../vendor/victoriris/authUtil"
+import { User } from "@prisma/client"
 
 export interface Context {
   request: Request
   response: Response
-  user: { id: string } | null
+  user: Partial<User> | null
   dataSources: IDateSources
 }
 
 export async function createContext(
-  request: ExpressContext
+  ctx: ExpressContext
 ): Promise<Partial<Context>> {
-  return {
-    ...request,
-    request: request.req,
-    response: request.res,
+  const gqlCtx: Context = {
+    ...ctx,
+    request: ctx.req,
+    response: ctx.res,
     user: null,
-    dataSources: ({
+    dataSources: {
       user: new UserDataSource({ prisma }),
+    },
+  }
+  try {
+    const userId = getUserId({ request: ctx.req })
+    if (!userId) return gqlCtx
+
+    const user = await prisma.user.findFirst({
+      where: {
+        id: userId,
+      },
     })
-  } as Context
+    if (!user) return gqlCtx
+
+    gqlCtx.user = {
+      email: user.email,
+      id: user.id,
+      name: user.name,
+    }
+    return gqlCtx
+  } catch (error) {
+    return gqlCtx
+  }
 }

@@ -52,6 +52,7 @@ type Query {
   getMyUser: User
   getUser(id: ID!): User
   getUsers: [User!]!
+  logout: Boolean
   refreshToken: AuthPayload
 }
 
@@ -66,7 +67,6 @@ input SignupInput {
   email: String!
   name: String!
   password: String!
-  repeatPassword: String!
 }
 
 """Records buy and sell information of cryptos"""

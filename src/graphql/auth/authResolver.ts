@@ -4,10 +4,19 @@ import { User } from "../user/user-type"
 import {
   createTokens,
   getRefreshCookie,
+  removeRefreshCookie,
 } from "../../vendor/victoriris/authUtil"
 import { AuthenticationError } from "apollo-server-errors"
 
 // Query
+export const logoutQuery = queryField("logout", {
+  type: "Boolean",
+  resolve: async (_parent, _args, context) => {
+    removeRefreshCookie(context)
+    return true
+  },
+})
+
 export const RefreshTokenQuery = queryField("refreshToken", {
   type: "AuthPayload",
   resolve: async (_parent, _args, context): Promise<AuthPayload> => {

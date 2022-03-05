@@ -2,7 +2,7 @@ import { makeSchema } from "nexus"
 import { join } from "path"
 import * as types from "./graphql"
 import { applyMiddleware } from "graphql-middleware"
-import { permissions } from "./graphql/permissions"
+import { permissions } from "./graphql/auth/permissions"
 import { GraphQLSchema } from "graphql"
 
 const ROOT_RELATIVE_PATH = join(__dirname, "..")

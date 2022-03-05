@@ -3,6 +3,7 @@ import { User } from "../user/user-type"
 export type SignupInput = {
   email: string
   password: string
+  name: string
   repeatPassword: string
 }
 

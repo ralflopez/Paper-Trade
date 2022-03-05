@@ -15,6 +15,6 @@ export * from "./scalar/DateTime"
 export * from "./scalar/Email"
 
 // enums
-export * from "./enum/Role"
-export * from "./enum/TradeType"
-export * from "./enum/BalanceType"
+export * from "./auth/Role"
+export * from "./trade/TradeType"
+export * from "./balance/BalanceType"
