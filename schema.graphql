@@ -15,6 +15,12 @@ type Balance {
   timestamp: DateTime!
   type: BalanceType!
   user: User!
+  userId: String!
+}
+
+input BalanceInput {
+  amount: Float!
+  type: BalanceType!
 }
 
 """WITHDRAW / DEPOSIT"""
@@ -30,11 +36,6 @@ A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `dat
 """
 scalar DateTime
 
-input DepositInput {
-  amount: Float!
-  type: BalanceType!
-}
-
 """
 A field whose value conforms to the standard internet email address format as specified in RFC822: https://www.w3.org/Protocols/rfc822/.
 """
@@ -47,8 +48,11 @@ input LoginInput {
 }
 
 type Mutation {
+  """Perform buy operation of a certain coin"""
+  buy(data: TradeInput!): Trade
   deleteUser(id: ID!): User
   login(data: LoginInput!): AuthPayload
+  sell(data: TradeInput!): Trade
   signup(data: SignupInput!): AuthPayload
   updateUser(data: UserUpdateInput!, id: ID!): User
 }
@@ -76,13 +80,21 @@ input SignupInput {
 
 """Records buy and sell information of cryptos"""
 type Trade {
-  User: User!
   amount: Float!
-  boughtValue: Float!
   coinId: String!
   id: ID!
   timestamp: DateTime!
   type: TradeType!
+  user: User!
+  userId: String!
+  value: Float!
+}
+
+input TradeInput {
+  amount: Float!
+  coinId: String!
+  type: TradeType!
+  value: Float!
 }
 
 """Buy / Sell"""

@@ -75,16 +75,18 @@ export class BalanceDataSource
     userId: string
   ): Promise<Balance> {
     try {
-      return await this.prisma.balance.create({
+      const balance = await this.prisma.balance.create({
         data: {
           amount,
           type,
           userId,
         },
       })
+
+      return balance
     } catch (e) {
       if (e instanceof PrismaClientKnownRequestError) {
-        throw new UserInputError("Trade already exists")
+        throw new UserInputError("Balance already exists")
       } else {
         throw new UserInputError("Error creating a new user")
       }

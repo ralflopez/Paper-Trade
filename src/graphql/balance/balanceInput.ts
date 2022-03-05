@@ -1,7 +1,7 @@
 import { inputObjectType } from "nexus"
 
-export const DepositIinput = inputObjectType({
-  name: "DepositInput",
+export const BalanceInput = inputObjectType({
+  name: "BalanceInput",
   definition(t) {
     t.nonNull.float("amount")
     t.nonNull.field("type", {
