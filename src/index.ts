@@ -6,6 +6,9 @@ import { ApolloServerPluginDrainHttpServer } from "apollo-server-core"
 import express, { Express } from "express"
 import http, { Server } from "http"
 import cookieParser from "cookie-parser"
+import dotenv from "dotenv"
+
+dotenv.config()
 
 export function createApolloServer() {
   const app = express()
@@ -16,10 +19,14 @@ export function createApolloServer() {
     schema: schema as unknown as GraphQLSchema,
     context: createContext,
     plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
+    introspection: process.env.NODE_ENV !== "production",
   })
 
   const cors: CorsOptions = {
-    origin: ["http://localhost:4000", "https://studio.apollographql.com"],
+    origin: [
+      "https://studio.apollographql.com",
+      process.env.CLIENT_URL || "http://localhost:3000",
+    ],
     credentials: true,
   }
 
