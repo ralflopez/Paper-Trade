@@ -8,6 +8,8 @@ export * from "./auth/authInput"
 export * from "./auth/authResolver"
 
 export * from "./trade/Trade"
+export * from "./trade/tradeInput"
+export * from "./trade/tradeResolver"
 
 export * from "./balance/Balance"
 export * from "./balance/balanceInput"
