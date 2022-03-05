@@ -5,6 +5,7 @@ import { Request, Response } from "express"
 import { IDateSources } from "../types/datasource"
 import { getUserId } from "../vendor/victoriris/authUtil"
 import { User } from "@prisma/client"
+import { BalanceDataSource } from "../graphql/balance/balanceDataSource"
 
 export interface Context {
   request: Request
@@ -23,6 +24,7 @@ export async function createContext(
     user: null,
     dataSources: {
       user: new UserDataSource({ prisma }),
+      balance: new BalanceDataSource({ prisma }),
     },
   }
   try {

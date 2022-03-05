@@ -8,7 +8,10 @@ export * from "./auth/authInput"
 export * from "./auth/authResolver"
 
 export * from "./trade/Trade"
+
 export * from "./balance/Balance"
+export * from "./balance/balanceInput"
+export * from "./balance/balanceResolver"
 
 // scalars
 export * from "./scalar/DateTime"

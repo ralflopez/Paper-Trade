@@ -5,7 +5,10 @@ import { ApolloError, UserInputError } from "apollo-server-errors"
 import { Context } from "../../config/context"
 import { CrudDataSource, DatasourceConstructor } from "../../types/datasource"
 
-export class BalanceDataSource extends DataSource implements CrudDataSource {
+export class BalanceDataSource
+  extends DataSource
+  implements Partial<CrudDataSource>
+{
   context?: Context
   prisma: PrismaClient
 
@@ -37,7 +40,7 @@ export class BalanceDataSource extends DataSource implements CrudDataSource {
     })
   }
 
-  async getTotalCapital(userId: string): Promise<any> {
+  async getBalanceSummary(userId: string): Promise<BalanceSummary> {
     const result = await this.prisma.balance.groupBy({
       by: ["type"],
       where: {
@@ -48,12 +51,20 @@ export class BalanceDataSource extends DataSource implements CrudDataSource {
       },
     })
 
-    const data: BalanceAggregate[] = result.map((r) => {
+    const allocation: BalanceTypeInfo[] = result.map((r) => {
       return {
         amount: r._sum.amount,
         type: r.type,
-      } as BalanceAggregate
+      } as BalanceTypeInfo
     })
+
+    const data: BalanceSummary = {
+      allocation,
+      available: allocation
+        .filter((v) => v.type === "DEPOSIT" || v.type === "UNTRADE")
+        .reduce((prev, cur) => prev + cur.amount, 0),
+      total: allocation.reduce((prev, cur) => prev + cur.amount, 0),
+    }
 
     return data
   }
@@ -78,13 +89,5 @@ export class BalanceDataSource extends DataSource implements CrudDataSource {
         throw new UserInputError("Error creating a new user")
       }
     }
-  }
-
-  async deleteOne() {
-    return null
-  }
-
-  async updateOne() {
-    return null
   }
 }

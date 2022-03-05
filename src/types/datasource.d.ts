@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client"
+import { BalanceDataSource } from "../graphql/balance/balanceDataSource"
 import { UserDataSource } from "../graphql/user/userDataSource"
 
 export type DatasourceConstructor = {
@@ -7,6 +8,7 @@ export type DatasourceConstructor = {
 
 export interface IDateSources {
   user: UserDataSource
+  balance: BalanceDataSource
 }
 
 export interface CrudDataSource {

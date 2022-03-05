@@ -37,6 +37,10 @@ declare global {
 }
 
 export interface NexusGenInputs {
+  DepositInput: { // input type
+    amount: number; // Float!
+    type: NexusGenEnums['BalanceType']; // BalanceType!
+  }
   LoginInput: { // input type
     email: string; // String!
     password: string; // String!
