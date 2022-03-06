@@ -43,6 +43,7 @@
     "apollo-server-integration-testing": "^3.0.0",
     "bcrypt": "^5.0.1",
     "cookie-parser": "^1.4.6",
+    "dataloader": "^2.0.0",
     "date-fns": "^2.28.0",
     "dotenv": "^16.0.0",
     "express": "^4.17.2",
