@@ -52,6 +52,8 @@ export class BalanceDataSource
   //   })
   // }
 
+  async getBalanceSummary(userId: string) {}
+
   async createOne(
     amount: number,
     type: BalanceType,
