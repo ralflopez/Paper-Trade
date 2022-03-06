@@ -15,8 +15,7 @@ export const Balance = objectType({
     t.nonNull.field("user", {
       type: "User",
       resolve: async (parent, _args, context: Context) => {
-        const user = await context.dataSources.user.getOne(parent.userId)
-        return user
+        return context.dataloader.loader.load("user", parent.userId)
       },
     })
     t.nonNull.float("amount")

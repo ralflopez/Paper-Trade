@@ -11,8 +11,7 @@ export const Trade = objectType({
     t.nonNull.field("user", {
       type: "User",
       resolve: async (parent, _args, context: Context) => {
-        const user = await context.dataSources.user.getOne(parent.userId)
-        return user
+        return await context.dataloader.loader.load("user", parent.userId)
       },
     })
     t.nonNull.string("coinId"), t.nonNull.float("amount")

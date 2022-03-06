@@ -40,34 +40,17 @@ export class BalanceDataSource
     })
   }
 
-  async getBalanceSummary(userId: string): Promise<BalanceSummary> {
-    const result = await this.prisma.balance.groupBy({
-      by: ["type"],
-      where: {
-        userId,
-      },
-      _sum: {
-        amount: true,
-      },
-    })
-
-    const allocation: BalanceTypeInfo[] = result.map((r) => {
-      return {
-        amount: r._sum.amount,
-        type: r.type,
-      } as BalanceTypeInfo
-    })
-
-    const data: BalanceSummary = {
-      allocation,
-      available: allocation
-        .filter((v) => v.type === "DEPOSIT" || v.type === "UNTRADE")
-        .reduce((prev, cur) => prev + cur.amount, 0),
-      total: allocation.reduce((prev, cur) => prev + cur.amount, 0),
-    }
-
-    return data
-  }
+  // async getBalanceSummary(userId: string): Promise<BalanceSummary> {
+  //   const result = await this.prisma.balance.groupBy({
+  //     by: ["type"],
+  //     where: {
+  //       userId,
+  //     },
+  //     _sum: {
+  //       amount: true,
+  //     },
+  //   })
+  // }
 
   async createOne(
     amount: number,
