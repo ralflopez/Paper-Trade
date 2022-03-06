@@ -2,17 +2,21 @@ import { ExpressContext } from "apollo-server-express"
 import { UserDataSource } from "../graphql/user/userDataSource"
 import { prisma } from "./prisma/client"
 import { Request, Response } from "express"
-import { IDateSources } from "../types/datasource"
+import { IDataSources } from "../types/datasource"
 import { getUserId } from "../vendor/victoriris/authUtil"
 import { User } from "@prisma/client"
 import { BalanceDataSource } from "../graphql/balance/balanceDataSource"
 import { TradeDataSource } from "../graphql/trade/tradeDataSource"
+import { Loader } from "./dataloader"
 
 export interface Context {
   request: Request
   response: Response
   user: Partial<User> | null
-  dataSources: IDateSources
+  dataSources: IDataSources
+  dataloader: {
+    loader: Loader
+  }
 }
 
 export async function createContext(
@@ -27,6 +31,9 @@ export async function createContext(
       user: new UserDataSource({ prisma }),
       balance: new BalanceDataSource({ prisma }),
       trade: new TradeDataSource({ prisma }),
+    },
+    dataloader: {
+      loader: new Loader(),
     },
   }
   try {

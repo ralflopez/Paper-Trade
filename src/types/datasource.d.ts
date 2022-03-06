@@ -7,7 +7,7 @@ export type DatasourceConstructor = {
   prisma: PrismaClient
 }
 
-export interface IDateSources {
+export interface IDataSources {
   user: UserDataSource
   balance: BalanceDataSource
   trade: TradeDataSource
