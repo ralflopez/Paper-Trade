@@ -8,27 +8,6 @@ type AuthPayload {
   user: User!
 }
 
-"""Keeps track of the total balance deposited to the users account"""
-type Balance {
-  amount: Float!
-  id: ID!
-  timestamp: DateTime!
-  type: BalanceType!
-  user: User!
-  userId: String!
-}
-
-input BalanceInput {
-  amount: Float!
-  type: BalanceType!
-}
-
-"""WITHDRAW / DEPOSIT"""
-enum BalanceType {
-  DEPOSIT
-  WITHDRAW
-}
-
 """
 A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
 """
@@ -46,11 +25,10 @@ input LoginInput {
 }
 
 type Mutation {
-  """Perform buy operation of a certain coin"""
-  buy(data: TradeInput!): Trade
+  """Buy operation of a certain cryptocurrency"""
+  buy(amount: Float!, symbol: String!): TransactionType
   deleteUser(id: ID!): User
   login(data: LoginInput!): AuthPayload
-  sell(data: TradeInput!): Trade
   signup(data: SignupInput!): AuthPayload
   updateUser(data: UserUpdateInput!, id: ID!): User
 }
@@ -76,29 +54,21 @@ input SignupInput {
   password: String!
 }
 
-"""Records buy and sell information of cryptos"""
-type Trade {
+"""Keep tracks of buy, sell, deposit and withdraw actions of a user"""
+type Transaction {
   amount: Float!
-  coinId: String!
   id: ID!
   timestamp: DateTime!
-  type: TradeType!
+  type: TransactionType!
   user: User!
   userId: String!
-  value: Float!
 }
 
-input TradeInput {
-  amount: Float!
-  coinId: String!
-  type: TradeType!
-  value: Float!
-}
-
-"""Buy / Sell"""
-enum TradeType {
+enum TransactionType {
   BUY
+  DEPOSIT
   SELL
+  WITHDRAW
 }
 
 """User model from the database"""

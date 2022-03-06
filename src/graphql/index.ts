@@ -6,20 +6,13 @@ export * from "./user/userResolver"
 export * from "./auth/AuthPayload"
 export * from "./auth/authInput"
 export * from "./auth/authResolver"
+export * from "./auth/Role"
 
-export * from "./trade/Trade"
-export * from "./trade/tradeInput"
-export * from "./trade/tradeResolver"
-
-export * from "./balance/Balance"
-export * from "./balance/balanceInput"
-export * from "./balance/balanceResolver"
+export * from "./transaction/Transaction"
+export * from "./transaction/transactionDataSource"
+export * from "./transaction/transactionResolver"
+export * from "./transaction/transactionType"
 
 // scalars
 export * from "./scalar/DateTime"
 export * from "./scalar/Email"
-
-// enums
-export * from "./auth/Role"
-export * from "./trade/TradeType"
-export * from "./balance/BalanceType"

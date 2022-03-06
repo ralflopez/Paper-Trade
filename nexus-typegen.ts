@@ -37,10 +37,6 @@ declare global {
 }
 
 export interface NexusGenInputs {
-  BalanceInput: { // input type
-    amount: number; // Float!
-    type: NexusGenEnums['BalanceType']; // BalanceType!
-  }
   LoginInput: { // input type
     email: string; // String!
     password: string; // String!
@@ -50,12 +46,6 @@ export interface NexusGenInputs {
     name: string; // String!
     password: string; // String!
   }
-  TradeInput: { // input type
-    amount: number; // Float!
-    coinId: string; // String!
-    type: NexusGenEnums['TradeType']; // TradeType!
-    value: number; // Float!
-  }
   UserUpdateInput: { // input type
     email: NexusGenScalars['EmailAddress']; // EmailAddress!
     name: string; // String!
@@ -64,9 +54,8 @@ export interface NexusGenInputs {
 }
 
 export interface NexusGenEnums {
-  BalanceType: "DEPOSIT" | "WITHDRAW"
   Role: "ADMIN" | "USER"
-  TradeType: "BUY" | "SELL"
+  TransactionType: "BUY" | "DEPOSIT" | "SELL" | "WITHDRAW"
 }
 
 export interface NexusGenScalars {
@@ -84,23 +73,14 @@ export interface NexusGenObjects {
     token: string; // String!
     user: NexusGenRootTypes['User']; // User!
   }
-  Balance: { // root type
-    amount: number; // Float!
-    id: string; // ID!
-    timestamp: NexusGenScalars['DateTime']; // DateTime!
-    type: NexusGenEnums['BalanceType']; // BalanceType!
-    userId: string; // String!
-  }
   Mutation: {};
   Query: {};
-  Trade: { // root type
+  Transaction: { // root type
     amount: number; // Float!
-    coinId: string; // String!
     id: string; // ID!
     timestamp: NexusGenScalars['DateTime']; // DateTime!
-    type: NexusGenEnums['TradeType']; // TradeType!
+    type: NexusGenEnums['TransactionType']; // TransactionType!
     userId: string; // String!
-    value: number; // Float!
   }
   User: { // root type
     email: NexusGenScalars['EmailAddress']; // EmailAddress!
@@ -125,19 +105,10 @@ export interface NexusGenFieldTypes {
     token: string; // String!
     user: NexusGenRootTypes['User']; // User!
   }
-  Balance: { // field return type
-    amount: number; // Float!
-    id: string; // ID!
-    timestamp: NexusGenScalars['DateTime']; // DateTime!
-    type: NexusGenEnums['BalanceType']; // BalanceType!
-    user: NexusGenRootTypes['User']; // User!
-    userId: string; // String!
-  }
   Mutation: { // field return type
-    buy: NexusGenRootTypes['Trade'] | null; // Trade
+    buy: NexusGenEnums['TransactionType'] | null; // TransactionType
     deleteUser: NexusGenRootTypes['User'] | null; // User
     login: NexusGenRootTypes['AuthPayload'] | null; // AuthPayload
-    sell: NexusGenRootTypes['Trade'] | null; // Trade
     signup: NexusGenRootTypes['AuthPayload'] | null; // AuthPayload
     updateUser: NexusGenRootTypes['User'] | null; // User
   }
@@ -148,15 +119,13 @@ export interface NexusGenFieldTypes {
     logout: boolean | null; // Boolean
     refreshToken: NexusGenRootTypes['AuthPayload'] | null; // AuthPayload
   }
-  Trade: { // field return type
+  Transaction: { // field return type
     amount: number; // Float!
-    coinId: string; // String!
     id: string; // ID!
     timestamp: NexusGenScalars['DateTime']; // DateTime!
-    type: NexusGenEnums['TradeType']; // TradeType!
+    type: NexusGenEnums['TransactionType']; // TransactionType!
     user: NexusGenRootTypes['User']; // User!
     userId: string; // String!
-    value: number; // Float!
   }
   User: { // field return type
     email: NexusGenScalars['EmailAddress']; // EmailAddress!
@@ -171,19 +140,10 @@ export interface NexusGenFieldTypeNames {
     token: 'String'
     user: 'User'
   }
-  Balance: { // field return type name
-    amount: 'Float'
-    id: 'ID'
-    timestamp: 'DateTime'
-    type: 'BalanceType'
-    user: 'User'
-    userId: 'String'
-  }
   Mutation: { // field return type name
-    buy: 'Trade'
+    buy: 'TransactionType'
     deleteUser: 'User'
     login: 'AuthPayload'
-    sell: 'Trade'
     signup: 'AuthPayload'
     updateUser: 'User'
   }
@@ -194,15 +154,13 @@ export interface NexusGenFieldTypeNames {
     logout: 'Boolean'
     refreshToken: 'AuthPayload'
   }
-  Trade: { // field return type name
+  Transaction: { // field return type name
     amount: 'Float'
-    coinId: 'String'
     id: 'ID'
     timestamp: 'DateTime'
-    type: 'TradeType'
+    type: 'TransactionType'
     user: 'User'
     userId: 'String'
-    value: 'Float'
   }
   User: { // field return type name
     email: 'EmailAddress'
@@ -215,16 +173,14 @@ export interface NexusGenFieldTypeNames {
 export interface NexusGenArgTypes {
   Mutation: {
     buy: { // args
-      data: NexusGenInputs['TradeInput']; // TradeInput!
+      amount: number; // Float!
+      symbol: string; // String!
     }
     deleteUser: { // args
       id: string; // ID!
     }
     login: { // args
       data: NexusGenInputs['LoginInput']; // LoginInput!
-    }
-    sell: { // args
-      data: NexusGenInputs['TradeInput']; // TradeInput!
     }
     signup: { // args
       data: NexusGenInputs['SignupInput']; // SignupInput!

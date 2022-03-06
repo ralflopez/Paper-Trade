@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client"
 import { BalanceDataSource } from "../graphql/balance/balanceDataSource"
 import { TradeDataSource } from "../graphql/trade/tradeDataSource"
 import { UserDataSource } from "../graphql/user/userDataSource"
+import { TransactionDataSource } from "../graphql/transaction/transactionDataSource"
 
 export type DatasourceConstructor = {
   prisma: PrismaClient
@@ -9,8 +10,7 @@ export type DatasourceConstructor = {
 
 export interface IDataSources {
   user: UserDataSource
-  balance: BalanceDataSource
-  trade: TradeDataSource
+  transaction: TransactionDataSource
 }
 
 export interface CrudDataSource {
