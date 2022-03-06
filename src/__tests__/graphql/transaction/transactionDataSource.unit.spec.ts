@@ -79,7 +79,7 @@ describe("deposit", () => {
     expect(returnedTransaction.id).toBe(mockTransaction.id)
   })
 
-  // TODO: it("should throw if symbol is invalid")
+  //   it("should throw if symbol is invalid", async () => {})
 })
 
 describe("withdraw", () => {
