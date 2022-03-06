@@ -12,37 +12,43 @@ export class CoinCapIoDataSource extends RESTDataSource {
     throw new ApolloError("[Coin Cap] Failed to retrieve data from the server")
   }
 
-  async getAllAssets() {
+  async getAllAssets(): Promise<CoinCapIo_Asset[] | undefined> {
     try {
-      const response = await this.get("assets")
+      const response: CoinCapIo_Assets = await this.get("assets")
       return response.data
     } catch (e) {
       this.throwFailError()
     }
   }
 
-  async getAsset(id: string) {
+  async getAsset(id: string): Promise<CoinCapIo_Asset | undefined> {
     try {
-      const response = await this.get(this.baseURL + "assets/" + id)
+      const response: CoinCapIo_Asset_Result = await this.get(
+        this.baseURL + "assets/" + id
+      )
       return response.data
     } catch (e) {
       this.throwFailError()
     }
   }
 
-  async getRates() {
+  async getRates(): Promise<CoinCapIo_Rate[] | undefined> {
     try {
-      const response = await this.get(this.baseURL + "rates")
-      const data = response.data.filter((d: any) => d.type === "fiat")
+      const response: CoinCapIo_Rates = await this.get(this.baseURL + "rates")
+      const data: CoinCapIo_Rate[] = response.data.filter(
+        (d: any) => d.type === "fiat"
+      )
       return data
     } catch (e) {
       this.throwFailError()
     }
   }
 
-  async getRate(id: string) {
+  async getRate(id: string): Promise<CoinCapIo_Rate | undefined> {
     try {
-      const response = await this.get(this.baseURL + "rates/" + id)
+      const response: CoinCapIo_Rate_Result = await this.get(
+        this.baseURL + "rates/" + id
+      )
       return response.data
     } catch (e) {
       this.throwFailError()
