@@ -1,7 +1,20 @@
 import { AuthenticationError } from "apollo-server-errors"
-import { mutationField, nonNull } from "nexus"
+import { list, mutationField, nonNull, queryField } from "nexus"
 import { Context } from "../../config/context"
 
+// Query
+export const transactions = queryField("transactions", {
+  type: nonNull(list(nonNull("Transaction"))),
+  description: "Returns all transactions in the ledger",
+  resolve: async (_parent, args, { user, dataSources }: Context) => {
+    // validatoin
+    if (!user?.id) throw new AuthenticationError("You are not logged in")
+
+    // read from database
+    const transactions = dataSources.transaction.getMyTransactions(user.id)
+    return transactions
+  },
+})
 // Mutation
 export const BuyMutation = mutationField("buy", {
   type: "Transaction",
