@@ -45,58 +45,65 @@ export class TransactionDataSource extends DataSource {
         amount: this.toNegative(amount),
         symbol,
         type: TransactionType.BUY,
-        userId: userId,
+        userId,
       },
     })
 
     return transaction
   }
 
-  async sell(amount: number, symbol: string): Promise<Transaction> {
+  async sell(
+    userId: string,
+    amount: number,
+    symbol: string
+  ): Promise<Transaction> {
     const transaction = await this.prisma.transaction.create({
       data: {
         amount,
         symbol,
         type: TransactionType.SELL,
-        userId: this.getUserId(),
+        userId,
       },
     })
 
     return transaction
   }
 
-  async deposit(amount: number): Promise<Transaction> {
+  async deposit(userId: string, amount: number): Promise<Transaction> {
     if (amount < 0) throw new UserInputError("Amount cannot be negative")
     const transaction = this.prisma.transaction.create({
       data: {
         amount,
         symbol: "CASH",
         type: TransactionType.DEPOSIT,
-        userId: this.getUserId(),
+        userId,
       },
     })
 
     return transaction
   }
 
-  async withdraw(amount: number): Promise<Transaction> {
+  async withdraw(userId: string, amount: number): Promise<Transaction> {
     const transaction = await this.prisma.transaction.create({
       data: {
         amount: this.toNegative(amount),
         symbol: "CASH",
         type: TransactionType.WITHDRAW,
-        userId: this.getUserId(),
+        userId,
       },
     })
 
     return transaction
   }
 
-  async getMyTransactions(transactionId?: string): Promise<Transaction[]> {
+  async getMyTransactions(
+    userId: string,
+    transactionId?: string
+  ): Promise<Transaction[]> {
     const transaction = await this.prisma.transaction.findMany({
       where: {
         id: transactionId,
-        userId: this.getUserId(),
+        userId,
       },
     })
 
