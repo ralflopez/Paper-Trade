@@ -3,14 +3,17 @@ import { CoinCapIoDataSource } from "../../../services/coinCapIo/coinCapIoDataSo
 
 let coinCapIoDataSource: CoinCapIoDataSource
 
-beforeAll(() => {
+beforeAll(async () => {
   coinCapIoDataSource = new CoinCapIoDataSource({ redisClient })
+  // clear cache
+  await redisClient.client.connect()
+  await redisClient.client.flushDb()
+  await redisClient.client.quit()
 })
 
 describe("getAllAssets", () => {
   it("should return details", async () => {
     const result = await coinCapIoDataSource.getAllAssets()
-    console.log(result)
     expect(result).toBeDefined()
     expect(Array.isArray(result)).toBeTruthy()
     expect(result).toEqual(

@@ -7,7 +7,7 @@ beforeAll(async () => {
   coinCapIoDataSource = new CoinCapIoDataSource({ redisClient })
 })
 
-afterAll(async () => {
+afterEach(async () => {
   // refresh db
   await redisClient.client.connect()
   await redisClient.client.flushDb()

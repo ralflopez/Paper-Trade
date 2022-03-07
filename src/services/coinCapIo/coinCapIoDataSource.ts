@@ -1,5 +1,6 @@
 import { HTTPCache, RESTDataSource } from "apollo-datasource-rest"
 import { ApolloError } from "apollo-server-errors"
+import { da } from "date-fns/locale"
 import { RedisClient } from "../../config/redis/client"
 
 export class CoinCapIoDataSource extends RESTDataSource {
@@ -46,11 +47,19 @@ export class CoinCapIoDataSource extends RESTDataSource {
   }
 
   async getRates(): Promise<CoinCapIo_Rate[] | undefined> {
+    // check cache
+    const CACHE_KEY = "coincapio.allrates"
+    const cacheValue = await this.redisClient.checkCache<CoinCapIo_Rate[]>(
+      CACHE_KEY
+    )
+    if (cacheValue) return cacheValue
+
     try {
       const response: CoinCapIo_Rates = await this.get(this.baseURL + "rates")
       const data: CoinCapIo_Rate[] = response.data.filter(
         (d: any) => d.type === "fiat"
       )
+      await this.redisClient.storeCache(CACHE_KEY, JSON.stringify(data))
       return data
     } catch (e) {
       this.throwFailError()
