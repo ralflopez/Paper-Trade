@@ -121,6 +121,7 @@ export interface NexusGenFieldTypes {
     getUsers: NexusGenRootTypes['User'][]; // [User!]!
     logout: boolean | null; // Boolean
     refreshToken: NexusGenRootTypes['AuthPayload'] | null; // AuthPayload
+    transactions: NexusGenRootTypes['Transaction'][]; // [Transaction!]!
   }
   Transaction: { // field return type
     amount: number; // Float!
@@ -159,6 +160,7 @@ export interface NexusGenFieldTypeNames {
     getUsers: 'User'
     logout: 'Boolean'
     refreshToken: 'AuthPayload'
+    transactions: 'Transaction'
   }
   Transaction: { // field return type name
     amount: 'Float'

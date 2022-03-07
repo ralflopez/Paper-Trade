@@ -48,6 +48,9 @@ type Query {
   getUsers: [User!]!
   logout: Boolean
   refreshToken: AuthPayload
+
+  """Returns all transactions in the ledger"""
+  transactions: [Transaction!]!
 }
 
 """Role of the User"""
