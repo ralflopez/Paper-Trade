@@ -14,7 +14,7 @@ interface CoinCapIo_Asset {
 }
 
 interface CoinCapIo_Assets {
-  data: Asset[]
+  data: CoinCapIo_Asset[]
   timestamp: string
 }
 

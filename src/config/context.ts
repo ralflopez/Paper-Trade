@@ -7,6 +7,8 @@ import { getUserId } from "../vendor/victoriris/authUtil"
 import { User } from "@prisma/client"
 import { Loader } from "./dataloader"
 import { TransactionDataSource } from "../graphql/transaction/transactionDataSource"
+import { CoinCapIoDataSource } from "../services/coinCapIo/coinCapIoDataSource"
+import { redisClient } from "../config/redis/client"
 
 export interface Context {
   request: Request
@@ -29,6 +31,7 @@ export async function createContext(
     dataSources: {
       user: new UserDataSource({ prisma }),
       transaction: new TransactionDataSource({ prisma }),
+      coinCapIo: new CoinCapIoDataSource({ redisClient }),
     },
     dataloader: {
       loader: new Loader(),

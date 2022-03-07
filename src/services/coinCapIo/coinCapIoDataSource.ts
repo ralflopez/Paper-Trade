@@ -1,22 +1,36 @@
 import { HTTPCache, RESTDataSource } from "apollo-datasource-rest"
 import { ApolloError } from "apollo-server-errors"
+import { RedisClient } from "../../config/redis/client"
 
 export class CoinCapIoDataSource extends RESTDataSource {
-  constructor() {
+  private redisClient: RedisClient
+
+  constructor({ redisClient }: { redisClient: RedisClient }) {
     super()
     this.baseURL = "https://api.coincap.io/v2/"
     this.httpCache = new HTTPCache()
+    this.redisClient = redisClient
   }
 
   throwFailError() {
     throw new ApolloError("[Coin Cap] Failed to retrieve data from the server")
   }
 
-  async getAllAssets(): Promise<CoinCapIo_Asset[] | undefined> {
+  async getAllAssets(): Promise<CoinCapIo_Asset[] | undefined | null> {
+    // check cache
+    const CACHE_KEY = "coincapio.allassets"
+    const cacheValue = await this.redisClient.checkCache<CoinCapIo_Asset[]>(
+      CACHE_KEY
+    )
+    if (cacheValue) return cacheValue
+
+    // no cache
     try {
-      const response: CoinCapIo_Assets = await this.get("assets")
-      return response.data
+      const result: CoinCapIo_Assets = await this.get("assets")
+      await this.redisClient.storeCache(CACHE_KEY, JSON.stringify(result.data))
+      return result.data
     } catch (e) {
+      this.redisClient.quit()
       this.throwFailError()
     }
   }
