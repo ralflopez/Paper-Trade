@@ -33,7 +33,11 @@ export class TransactionDataSource extends DataSource {
     return input > 0 ? input * -1 : input
   }
 
-  async buy(amount: number, symbol: string): Promise<Transaction> {
+  async buy(
+    userId: string,
+    amount: number,
+    symbol: string
+  ): Promise<Transaction> {
     if (amount < 0) throw new UserInputError("Amount cannot be negative")
 
     const transaction = await this.prisma.transaction.create({
@@ -41,7 +45,7 @@ export class TransactionDataSource extends DataSource {
         amount: this.toNegative(amount),
         symbol,
         type: TransactionType.BUY,
-        userId: this.getUserId(),
+        userId: userId,
       },
     })
 

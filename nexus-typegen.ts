@@ -106,7 +106,7 @@ export interface NexusGenFieldTypes {
     user: NexusGenRootTypes['User']; // User!
   }
   Mutation: { // field return type
-    buy: NexusGenEnums['TransactionType'] | null; // TransactionType
+    buy: NexusGenRootTypes['Transaction'] | null; // Transaction
     deleteUser: NexusGenRootTypes['User'] | null; // User
     login: NexusGenRootTypes['AuthPayload'] | null; // AuthPayload
     signup: NexusGenRootTypes['AuthPayload'] | null; // AuthPayload
@@ -141,7 +141,7 @@ export interface NexusGenFieldTypeNames {
     user: 'User'
   }
   Mutation: { // field return type name
-    buy: 'TransactionType'
+    buy: 'Transaction'
     deleteUser: 'User'
     login: 'AuthPayload'
     signup: 'AuthPayload'

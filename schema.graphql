@@ -26,7 +26,7 @@ input LoginInput {
 
 type Mutation {
   """Buy operation of a certain cryptocurrency"""
-  buy(amount: Float!, symbol: String!): TransactionType
+  buy(amount: Float!, symbol: String!): Transaction
   deleteUser(id: ID!): User
   login(data: LoginInput!): AuthPayload
   signup(data: SignupInput!): AuthPayload
