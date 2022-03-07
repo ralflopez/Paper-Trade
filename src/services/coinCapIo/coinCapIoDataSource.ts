@@ -1,6 +1,5 @@
 import { HTTPCache, RESTDataSource } from "apollo-datasource-rest"
 import { ApolloError } from "apollo-server-errors"
-import { da } from "date-fns/locale"
 import { RedisClient } from "../../config/redis/client"
 
 export class CoinCapIoDataSource extends RESTDataSource {
