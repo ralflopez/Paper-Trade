@@ -23,7 +23,6 @@ export class CoinCapIoDataSource extends RESTDataSource {
       CACHE_KEY
     )
     if (cacheValue) return cacheValue
-
     // no cache
     try {
       const result: CoinCapIo_Assets = await this.get("assets")

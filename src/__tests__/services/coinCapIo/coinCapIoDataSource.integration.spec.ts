@@ -1,14 +1,16 @@
+import { redisClient } from "../../../config/redis/client"
 import { CoinCapIoDataSource } from "../../../services/coinCapIo/coinCapIoDataSource"
 
 let coinCapIoDataSource: CoinCapIoDataSource
 
 beforeAll(() => {
-  coinCapIoDataSource = new CoinCapIoDataSource()
+  coinCapIoDataSource = new CoinCapIoDataSource({ redisClient })
 })
 
 describe("getAllAssets", () => {
   it("should return details", async () => {
     const result = await coinCapIoDataSource.getAllAssets()
+    console.log(result)
     expect(result).toBeDefined()
     expect(Array.isArray(result)).toBeTruthy()
     expect(result).toEqual(
