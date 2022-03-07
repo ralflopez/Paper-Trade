@@ -108,9 +108,12 @@ export interface NexusGenFieldTypes {
   Mutation: { // field return type
     buy: NexusGenRootTypes['Transaction'] | null; // Transaction
     deleteUser: NexusGenRootTypes['User'] | null; // User
+    deposit: NexusGenRootTypes['Transaction'] | null; // Transaction
     login: NexusGenRootTypes['AuthPayload'] | null; // AuthPayload
+    sell: NexusGenRootTypes['Transaction'] | null; // Transaction
     signup: NexusGenRootTypes['AuthPayload'] | null; // AuthPayload
     updateUser: NexusGenRootTypes['User'] | null; // User
+    withdraw: NexusGenRootTypes['Transaction'] | null; // Transaction
   }
   Query: { // field return type
     getMyUser: NexusGenRootTypes['User'] | null; // User
@@ -143,9 +146,12 @@ export interface NexusGenFieldTypeNames {
   Mutation: { // field return type name
     buy: 'Transaction'
     deleteUser: 'User'
+    deposit: 'Transaction'
     login: 'AuthPayload'
+    sell: 'Transaction'
     signup: 'AuthPayload'
     updateUser: 'User'
+    withdraw: 'Transaction'
   }
   Query: { // field return type name
     getMyUser: 'User'
@@ -179,8 +185,15 @@ export interface NexusGenArgTypes {
     deleteUser: { // args
       id: string; // ID!
     }
+    deposit: { // args
+      amount: number; // Float!
+    }
     login: { // args
       data: NexusGenInputs['LoginInput']; // LoginInput!
+    }
+    sell: { // args
+      amount: number; // Float!
+      symbol: string; // String!
     }
     signup: { // args
       data: NexusGenInputs['SignupInput']; // SignupInput!
@@ -188,6 +201,9 @@ export interface NexusGenArgTypes {
     updateUser: { // args
       data: NexusGenInputs['UserUpdateInput']; // UserUpdateInput!
       id: string; // ID!
+    }
+    withdraw: { // args
+      amount: number; // Float!
     }
   }
   Query: {

@@ -28,9 +28,18 @@ type Mutation {
   """Buy operation of a certain cryptocurrency"""
   buy(amount: Float!, symbol: String!): Transaction
   deleteUser(id: ID!): User
+
+  """deposit operation of a certain cryptocurrency"""
+  deposit(amount: Float!): Transaction
   login(data: LoginInput!): AuthPayload
+
+  """sell operation of a certain cryptocurrency"""
+  sell(amount: Float!, symbol: String!): Transaction
   signup(data: SignupInput!): AuthPayload
   updateUser(data: UserUpdateInput!, id: ID!): User
+
+  """withdraw operation of a certain cryptocurrency"""
+  withdraw(amount: Float!): Transaction
 }
 
 type Query {
