@@ -25,7 +25,8 @@ export function createApolloServer() {
   const cors: CorsOptions = {
     origin: [
       "https://studio.apollographql.com",
-      process.env.CLIENT_URL || "http://localhost:3000",
+      "http://localhost:3000",
+      process.env.CLIENT_URL,
     ],
     credentials: true,
   }
