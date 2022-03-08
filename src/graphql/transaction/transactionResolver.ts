@@ -22,7 +22,6 @@ export const BuyMutation = mutationField("buy", {
   description: "Buy operation of a certain cryptocurrency",
   args: {
     amount: nonNull("Float"),
-    symbol: nonNull("String"),
     assetId: nonNull("String"),
   },
   resolve: async (
@@ -56,7 +55,6 @@ export const SellMutation = mutationField("sell", {
   description: "sell operation of a certain cryptocurrency",
   args: {
     amount: nonNull("Float"),
-    symbol: nonNull("String"),
     assetId: nonNull("String"),
   },
   resolve: async (
