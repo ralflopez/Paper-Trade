@@ -1,4 +1,4 @@
-import { AuthenticationError } from "apollo-server-errors"
+import { AuthenticationError, UserInputError } from "apollo-server-errors"
 import { list, mutationField, nonNull, queryField } from "nexus"
 import { Context } from "../../config/context"
 
@@ -25,17 +25,26 @@ export const BuyMutation = mutationField("buy", {
     symbol: nonNull("String"),
     assetId: nonNull("String"),
   },
-  resolve: async (_parent, args, { user, dataSources }: Context) => {
+  resolve: async (
+    _parent,
+    { amount, assetId },
+    { user, dataSources }: Context
+  ) => {
     // validation
     if (!user?.id) throw new AuthenticationError("You are not logged in")
 
+    // validate asset
+    const asset: CoinCapIo_Asset | null = await dataSources.coinCapIo.getAsset(
+      assetId
+    )
+    if (!asset) throw new UserInputError("Asset not found")
+
     // write to database
-    const { amount, symbol, assetId } = args
     const result = await dataSources.transaction.buy(
       user.id,
       amount,
-      symbol,
-      assetId
+      asset.symbol,
+      asset.id
     )
 
     return result
@@ -50,17 +59,26 @@ export const SellMutation = mutationField("sell", {
     symbol: nonNull("String"),
     assetId: nonNull("String"),
   },
-  resolve: async (_parent, args, { user, dataSources }: Context) => {
+  resolve: async (
+    _parent,
+    { amount, assetId },
+    { user, dataSources }: Context
+  ) => {
     // validation
     if (!user?.id) throw new AuthenticationError("You are not logged in")
 
+    // validate asset
+    const asset: CoinCapIo_Asset | null = await dataSources.coinCapIo.getAsset(
+      assetId
+    )
+    if (!asset) throw new UserInputError("Asset not found")
+
     // write to database
-    const { amount, symbol, assetId } = args
     const result = await dataSources.transaction.sell(
       user.id,
       amount,
-      symbol,
-      assetId
+      asset.symbol,
+      asset.id
     )
 
     return result
