@@ -32,7 +32,7 @@ describe("buy", () => {
 
     mockCtx.prisma.transaction.create.mockResolvedValue(mockTransaction)
 
-    const returnedTransaction = await transactionDataSource.buy(1, "ABC")
+    const returnedTransaction = await transactionDataSource.buy("123", 1, "ABC")
 
     expect(returnedTransaction.id).toBe(mockTransaction.id)
   })
@@ -53,7 +53,11 @@ describe("sell", () => {
 
     mockCtx.prisma.transaction.create.mockResolvedValue(mockTransaction)
 
-    const returnedTransaction = await transactionDataSource.sell(1, "ABC")
+    const returnedTransaction = await transactionDataSource.sell(
+      "123",
+      1,
+      "ABC"
+    )
 
     expect(returnedTransaction.id).toBe(mockTransaction.id)
   })
@@ -74,7 +78,7 @@ describe("deposit", () => {
 
     mockCtx.prisma.transaction.create.mockResolvedValue(mockTransaction)
 
-    const returnedTransaction = await transactionDataSource.deposit(1)
+    const returnedTransaction = await transactionDataSource.deposit("123", 1)
 
     expect(returnedTransaction.id).toBe(mockTransaction.id)
   })
@@ -95,7 +99,7 @@ describe("withdraw", () => {
 
     mockCtx.prisma.transaction.create.mockResolvedValue(mockTransaction)
 
-    const returnedTransaction = await transactionDataSource.withdraw(1)
+    const returnedTransaction = await transactionDataSource.withdraw("123", 1)
 
     expect(returnedTransaction.id).toBe(mockTransaction.id)
   })
