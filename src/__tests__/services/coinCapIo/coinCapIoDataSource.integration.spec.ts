@@ -3,8 +3,11 @@ import { CoinCapIoDataSource } from "../../../services/coinCapIo/coinCapIoDataSo
 
 let coinCapIoDataSource: CoinCapIoDataSource
 
-beforeAll(async () => {
+beforeAll(() => {
   coinCapIoDataSource = new CoinCapIoDataSource({ redisClient })
+})
+
+beforeEach(async () => {
   // clear cache
   await redisClient.client.connect()
   await redisClient.client.flushDb()
