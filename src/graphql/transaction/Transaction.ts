@@ -26,3 +26,22 @@ export const Transaction = objectType({
     })
   },
 })
+
+export const AssetAllocationOutput = objectType({
+  name: "AssetAllocationOutput",
+  definition(t) {
+    t.nonNull.string("symbol")
+    t.nonNull.float("total")
+    t.nonNull.float("total")
+  },
+})
+
+export const PortfolioOutput = objectType({
+  name: "PortfolioOutput",
+  definition(t) {
+    t.nonNull.float("buyingPower")
+    t.nonNull.list.nonNull.field("assetAllocation", {
+      type: "AssetAllocationOutput",
+    })
+  },
+})

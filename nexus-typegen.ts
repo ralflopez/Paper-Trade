@@ -37,17 +37,9 @@ declare global {
 }
 
 export interface NexusGenInputs {
-  AssetAllocationInput: { // input type
-    symbol: string; // String!
-    total: number; // Float!
-  }
   LoginInput: { // input type
     email: string; // String!
     password: string; // String!
-  }
-  PortfolioInput: { // input type
-    assetAllocation: NexusGenInputs['AssetAllocationInput'][]; // [AssetAllocationInput!]!
-    buyingPower: number; // Float!
   }
   SignupInput: { // input type
     email: string; // String!
@@ -78,11 +70,19 @@ export interface NexusGenScalars {
 }
 
 export interface NexusGenObjects {
+  AssetAllocationOutput: { // root type
+    symbol: string; // String!
+    total: number; // Float!
+  }
   AuthPayload: { // root type
     token: string; // String!
     user: NexusGenRootTypes['User']; // User!
   }
   Mutation: {};
+  PortfolioOutput: { // root type
+    assetAllocation: NexusGenRootTypes['AssetAllocationOutput'][]; // [AssetAllocationOutput!]!
+    buyingPower: number; // Float!
+  }
   Query: {};
   Transaction: { // root type
     amount: number; // Float!
@@ -113,6 +113,10 @@ export type NexusGenRootTypes = NexusGenObjects
 export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars & NexusGenEnums
 
 export interface NexusGenFieldTypes {
+  AssetAllocationOutput: { // field return type
+    symbol: string; // String!
+    total: number; // Float!
+  }
   AuthPayload: { // field return type
     token: string; // String!
     user: NexusGenRootTypes['User']; // User!
@@ -127,11 +131,16 @@ export interface NexusGenFieldTypes {
     updateUser: NexusGenRootTypes['User'] | null; // User
     withdraw: NexusGenRootTypes['Transaction'] | null; // Transaction
   }
+  PortfolioOutput: { // field return type
+    assetAllocation: NexusGenRootTypes['AssetAllocationOutput'][]; // [AssetAllocationOutput!]!
+    buyingPower: number; // Float!
+  }
   Query: { // field return type
     getMyUser: NexusGenRootTypes['User'] | null; // User
     getUser: NexusGenRootTypes['User'] | null; // User
     getUsers: NexusGenRootTypes['User'][]; // [User!]!
     logout: boolean | null; // Boolean
+    myPortfolio: NexusGenRootTypes['PortfolioOutput'] | null; // PortfolioOutput
     refreshToken: NexusGenRootTypes['AuthPayload'] | null; // AuthPayload
     transactions: NexusGenRootTypes['Transaction'][]; // [Transaction!]!
   }
@@ -155,6 +164,10 @@ export interface NexusGenFieldTypes {
 }
 
 export interface NexusGenFieldTypeNames {
+  AssetAllocationOutput: { // field return type name
+    symbol: 'String'
+    total: 'Float'
+  }
   AuthPayload: { // field return type name
     token: 'String'
     user: 'User'
@@ -169,11 +182,16 @@ export interface NexusGenFieldTypeNames {
     updateUser: 'User'
     withdraw: 'Transaction'
   }
+  PortfolioOutput: { // field return type name
+    assetAllocation: 'AssetAllocationOutput'
+    buyingPower: 'Float'
+  }
   Query: { // field return type name
     getMyUser: 'User'
     getUser: 'User'
     getUsers: 'User'
     logout: 'Boolean'
+    myPortfolio: 'PortfolioOutput'
     refreshToken: 'AuthPayload'
     transactions: 'Transaction'
   }

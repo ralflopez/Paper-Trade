@@ -2,7 +2,7 @@
 ### Do not make changes to this file directly
 
 
-input AssetAllocationInput {
+type AssetAllocationOutput {
   symbol: String!
   total: Float!
 }
@@ -52,8 +52,8 @@ type Mutation {
   withdraw(amount: Float!): Transaction
 }
 
-input PortfolioInput {
-  assetAllocation: [AssetAllocationInput!]!
+type PortfolioOutput {
+  assetAllocation: [AssetAllocationOutput!]!
   buyingPower: Float!
 }
 
@@ -62,6 +62,9 @@ type Query {
   getUser(id: ID!): User
   getUsers: [User!]!
   logout: Boolean
+
+  """a summary of all assets owned by the user"""
+  myPortfolio: PortfolioOutput
   refreshToken: AuthPayload
 
   """Returns all transactions in the ledger"""
