@@ -22,6 +22,11 @@ enum TransactionType {
   DEPOSIT
 }
 
+enum AssetType {
+  FIAT
+  CRYPTO
+}
+
 model User {
   id           String        @id @default(cuid())
   createdAt    DateTime      @default(now())
@@ -40,5 +45,7 @@ model Transaction {
   user      User            @relation(fields: [userId], references: [id])
   amount    Float
   symbol    String
+  assetId   String
+  assetType AssetType
   type      TransactionType
 }
