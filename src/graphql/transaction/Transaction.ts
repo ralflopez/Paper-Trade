@@ -12,6 +12,11 @@ export const Transaction = objectType({
       type: "TransactionType",
     })
     t.nonNull.float("amount")
+    t.nonNull.string("symbol")
+    t.nonNull.string("assetId")
+    t.nonNull.field("assetType", {
+      type: "AssetType",
+    })
     t.nonNull.string("userId")
     t.nonNull.field("user", {
       type: "User",

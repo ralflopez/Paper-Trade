@@ -1,4 +1,9 @@
-import { PrismaClient, Transaction, TransactionType } from "@prisma/client"
+import {
+  AssetType,
+  PrismaClient,
+  Transaction,
+  TransactionType,
+} from "@prisma/client"
 import { DataSource, DataSourceConfig } from "apollo-datasource"
 import {
   ApolloError,
@@ -36,7 +41,8 @@ export class TransactionDataSource extends DataSource {
   async buy(
     userId: string,
     amount: number,
-    symbol: string
+    symbol: string,
+    assetId: string
   ): Promise<Transaction> {
     if (amount < 0) throw new UserInputError("Amount cannot be negative")
 
@@ -46,6 +52,8 @@ export class TransactionDataSource extends DataSource {
         symbol,
         type: TransactionType.BUY,
         userId,
+        assetId,
+        assetType: AssetType.CRYPTO,
       },
     })
 
@@ -55,7 +63,8 @@ export class TransactionDataSource extends DataSource {
   async sell(
     userId: string,
     amount: number,
-    symbol: string
+    symbol: string,
+    assetId: string
   ): Promise<Transaction> {
     const transaction = await this.prisma.transaction.create({
       data: {
@@ -63,6 +72,8 @@ export class TransactionDataSource extends DataSource {
         symbol,
         type: TransactionType.SELL,
         userId,
+        assetId,
+        assetType: AssetType.CRYPTO,
       },
     })
 
@@ -74,9 +85,11 @@ export class TransactionDataSource extends DataSource {
     const transaction = this.prisma.transaction.create({
       data: {
         amount,
-        symbol: "CASH",
+        symbol: "PHP",
         type: TransactionType.DEPOSIT,
         userId,
+        assetId: "philippine-peso",
+        assetType: AssetType.FIAT,
       },
     })
 
@@ -87,9 +100,11 @@ export class TransactionDataSource extends DataSource {
     const transaction = await this.prisma.transaction.create({
       data: {
         amount: this.toNegative(amount),
-        symbol: "CASH",
+        symbol: "PHP",
         type: TransactionType.WITHDRAW,
         userId,
+        assetId: "philippine-peso",
+        assetType: AssetType.FIAT,
       },
     })
 
@@ -124,7 +139,7 @@ export class TransactionDataSource extends DataSource {
     }
 
     const assetAllocation = await this.prisma.transaction.groupBy({
-      by: ["symbol"],
+      by: ["symbol", "assetId"],
       _sum: {
         amount: true,
       },
@@ -151,6 +166,7 @@ export class TransactionDataSource extends DataSource {
       assetAllocation: assetAllocation.map((a) => {
         const asset: AssetAllocation = {
           symbol: a.symbol,
+          assetId: a.assetId,
           total: a._sum.amount as number,
         }
 

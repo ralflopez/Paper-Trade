@@ -200,6 +200,7 @@ export interface NexusGenArgTypes {
   Mutation: {
     buy: { // args
       amount: number; // Float!
+      assetId: string; // String!
       symbol: string; // String!
     }
     deleteUser: { // args
@@ -213,6 +214,7 @@ export interface NexusGenArgTypes {
     }
     sell: { // args
       amount: number; // Float!
+      assetId: string; // String!
       symbol: string; // String!
     }
     signup: { // args

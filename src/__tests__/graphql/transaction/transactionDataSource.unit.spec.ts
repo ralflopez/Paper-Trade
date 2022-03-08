@@ -1,4 +1,4 @@
-import { Transaction, TransactionType } from "@prisma/client"
+import { AssetType, Transaction, TransactionType } from "@prisma/client"
 import {
   createMockContext,
   MockContext,
@@ -28,11 +28,18 @@ describe("buy", () => {
       timestamp: new Date(Date.now()),
       type: TransactionType.BUY,
       userId: "123",
+      assetId: "abc",
+      assetType: AssetType.CRYPTO,
     }
 
     mockCtx.prisma.transaction.create.mockResolvedValue(mockTransaction)
 
-    const returnedTransaction = await transactionDataSource.buy("123", 1, "ABC")
+    const returnedTransaction = await transactionDataSource.buy(
+      "123",
+      1,
+      "ABC",
+      "abc"
+    )
 
     expect(returnedTransaction.id).toBe(mockTransaction.id)
   })
@@ -49,6 +56,8 @@ describe("sell", () => {
       timestamp: new Date(Date.now()),
       type: TransactionType.SELL,
       userId: "123",
+      assetId: "abc",
+      assetType: AssetType.CRYPTO,
     }
 
     mockCtx.prisma.transaction.create.mockResolvedValue(mockTransaction)
@@ -56,7 +65,8 @@ describe("sell", () => {
     const returnedTransaction = await transactionDataSource.sell(
       "123",
       1,
-      "ABC"
+      "ABC",
+      "abc"
     )
 
     expect(returnedTransaction.id).toBe(mockTransaction.id)
@@ -74,6 +84,8 @@ describe("deposit", () => {
       timestamp: new Date(Date.now()),
       type: TransactionType.DEPOSIT,
       userId: "123",
+      assetId: "philippine-peso",
+      assetType: AssetType.FIAT,
     }
 
     mockCtx.prisma.transaction.create.mockResolvedValue(mockTransaction)
@@ -95,6 +107,8 @@ describe("withdraw", () => {
       timestamp: new Date(Date.now()),
       type: TransactionType.WITHDRAW,
       userId: "123",
+      assetId: "philippine-peso",
+      assetType: AssetType.FIAT,
     }
 
     mockCtx.prisma.transaction.create.mockResolvedValue(mockTransaction)

@@ -6,8 +6,8 @@ import { Context } from "../../config/context"
 export const transactions = queryField("transactions", {
   type: nonNull(list(nonNull("Transaction"))),
   description: "Returns all transactions in the ledger",
-  resolve: async (_parent, args, { user, dataSources }: Context) => {
-    // validatoin
+  resolve: async (_parent, _args, { user, dataSources }: Context) => {
+    // validation
     if (!user?.id) throw new AuthenticationError("You are not logged in")
 
     // read from database
@@ -15,6 +15,7 @@ export const transactions = queryField("transactions", {
     return transactions
   },
 })
+
 // Mutation
 export const BuyMutation = mutationField("buy", {
   type: "Transaction",
@@ -22,14 +23,20 @@ export const BuyMutation = mutationField("buy", {
   args: {
     amount: nonNull("Float"),
     symbol: nonNull("String"),
+    assetId: nonNull("String"),
   },
   resolve: async (_parent, args, { user, dataSources }: Context) => {
     // validation
     if (!user?.id) throw new AuthenticationError("You are not logged in")
 
     // write to database
-    const { amount, symbol } = args
-    const result = await dataSources.transaction.buy(user.id, amount, symbol)
+    const { amount, symbol, assetId } = args
+    const result = await dataSources.transaction.buy(
+      user.id,
+      amount,
+      symbol,
+      assetId
+    )
 
     return result
   },
@@ -41,14 +48,20 @@ export const SellMutation = mutationField("sell", {
   args: {
     amount: nonNull("Float"),
     symbol: nonNull("String"),
+    assetId: nonNull("String"),
   },
   resolve: async (_parent, args, { user, dataSources }: Context) => {
     // validation
     if (!user?.id) throw new AuthenticationError("You are not logged in")
 
     // write to database
-    const { amount, symbol } = args
-    const result = await dataSources.transaction.sell(user.id, amount, symbol)
+    const { amount, symbol, assetId } = args
+    const result = await dataSources.transaction.sell(
+      user.id,
+      amount,
+      symbol,
+      assetId
+    )
 
     return result
   },

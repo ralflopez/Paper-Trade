@@ -1,4 +1,4 @@
-import { TransactionType, User } from "@prisma/client"
+import { AssetType, TransactionType, User } from "@prisma/client"
 import { prisma } from "../../../config/prisma/client"
 import { TransactionDataSource } from "../../../graphql"
 
@@ -24,36 +24,48 @@ beforeAll(async () => {
         symbol: "PHP",
         type: TransactionType.DEPOSIT,
         userId: user.id,
+        assetId: "philippine-peso",
+        assetType: AssetType.FIAT,
       },
       {
         amount: -10000,
         symbol: "BTC",
         type: TransactionType.BUY,
         userId: user.id,
+        assetId: "bitcoin",
+        assetType: AssetType.CRYPTO,
       },
       {
         amount: 12000,
         symbol: "BTC",
         type: TransactionType.SELL,
         userId: user.id,
+        assetId: "bitcoin",
+        assetType: AssetType.CRYPTO,
       },
       {
         amount: -5000,
         symbol: "PHP",
         type: TransactionType.WITHDRAW,
         userId: user.id,
+        assetId: "philippine-peso",
+        assetType: AssetType.FIAT,
       },
       {
         amount: -5000,
         symbol: "ETH",
         type: TransactionType.BUY,
         userId: user.id,
+        assetId: "etherium",
+        assetType: AssetType.CRYPTO,
       },
       {
         amount: 2000,
         symbol: "ETH",
         type: TransactionType.SELL,
         userId: user.id,
+        assetId: "etherium",
+        assetType: AssetType.CRYPTO,
       },
     ],
   })
@@ -72,7 +84,12 @@ afterAll(async () => {
 
 describe("buy", () => {
   it("should return a record where amount is negative", async () => {
-    const result = await transactionDataSource.buy(user.id, 100, "ETH")
+    const result = await transactionDataSource.buy(
+      user.id,
+      100,
+      "ETH",
+      "etherium"
+    )
     expect(result).toEqual(
       expect.objectContaining({ amount: -100, symbol: "ETH" })
     )
@@ -81,7 +98,12 @@ describe("buy", () => {
 
 describe("sell", () => {
   it("should return a record where amount is positive", async () => {
-    const result = await transactionDataSource.sell(user.id, 100, "ETH")
+    const result = await transactionDataSource.sell(
+      user.id,
+      100,
+      "ETH",
+      "etherium"
+    )
     expect(result).toEqual(
       expect.objectContaining({ amount: 100, symbol: "ETH" })
     )

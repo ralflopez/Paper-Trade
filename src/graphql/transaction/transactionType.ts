@@ -1,5 +1,5 @@
 import { enumType } from "nexus"
-import { TransactionType } from "@prisma/client"
+import { AssetType, TransactionType } from "@prisma/client"
 
 export const TransactionTypeGQL = enumType({
   name: "TransactionType",
@@ -9,4 +9,9 @@ export const TransactionTypeGQL = enumType({
     TransactionType.DEPOSIT,
     TransactionType.WITHDRAW,
   ],
+})
+
+export const AssetTypeGQL = enumType({
+  name: "AssetType",
+  members: [AssetType.CRYPTO, AssetType.FIAT],
 })

@@ -1,5 +1,6 @@
 interface AssetAllocation {
   symbol: string
+  assetId: string
   total: number
 }
 interface TransactionPortfolio {
