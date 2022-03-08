@@ -2,6 +2,11 @@
 ### Do not make changes to this file directly
 
 
+input AssetAllocationInput {
+  symbol: String!
+  total: Float!
+}
+
 """Return data for authenticated users"""
 type AuthPayload {
   token: String!
@@ -40,6 +45,11 @@ type Mutation {
 
   """withdraw operation of a certain cryptocurrency"""
   withdraw(amount: Float!): Transaction
+}
+
+input PortfolioInput {
+  assetAllocation: [AssetAllocationInput!]!
+  buyingPower: Float!
 }
 
 type Query {

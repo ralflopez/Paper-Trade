@@ -37,9 +37,17 @@ declare global {
 }
 
 export interface NexusGenInputs {
+  AssetAllocationInput: { // input type
+    symbol: string; // String!
+    total: number; // Float!
+  }
   LoginInput: { // input type
     email: string; // String!
     password: string; // String!
+  }
+  PortfolioInput: { // input type
+    assetAllocation: NexusGenInputs['AssetAllocationInput'][]; // [AssetAllocationInput!]!
+    buyingPower: number; // Float!
   }
   SignupInput: { // input type
     email: string; // String!

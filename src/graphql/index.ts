@@ -10,6 +10,7 @@ export * from "./auth/Role"
 
 export * from "./transaction/Transaction"
 export * from "./transaction/transactionDataSource"
+export * from "./transaction/transactionInput"
 export * from "./transaction/transactionResolver"
 export * from "./transaction/transactionType"
 
