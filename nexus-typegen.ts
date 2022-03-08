@@ -201,7 +201,6 @@ export interface NexusGenArgTypes {
     buy: { // args
       amount: number; // Float!
       assetId: string; // String!
-      symbol: string; // String!
     }
     deleteUser: { // args
       id: string; // ID!
@@ -215,7 +214,6 @@ export interface NexusGenArgTypes {
     sell: { // args
       amount: number; // Float!
       assetId: string; // String!
-      symbol: string; // String!
     }
     signup: { // args
       data: NexusGenInputs['SignupInput']; // SignupInput!

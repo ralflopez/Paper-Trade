@@ -3,7 +3,7 @@ import { list, mutationField, nonNull, queryField } from "nexus"
 import { Context } from "../../config/context"
 
 // Query
-export const transactions = queryField("transactions", {
+export const transactionsQuery = queryField("transactions", {
   type: nonNull(list(nonNull("Transaction"))),
   description: "Returns all transactions in the ledger",
   resolve: async (_parent, _args, { user, dataSources }: Context) => {
@@ -38,6 +38,8 @@ export const BuyMutation = mutationField("buy", {
     )
     if (!asset) throw new UserInputError("Asset not found")
 
+    // TODO: validate enough funds
+
     // write to database
     const result = await dataSources.transaction.buy(
       user.id,
@@ -70,6 +72,8 @@ export const SellMutation = mutationField("sell", {
       assetId
     )
     if (!asset) throw new UserInputError("Asset not found")
+
+    // TODO: validate enough funds
 
     // write to database
     const result = await dataSources.transaction.sell(
