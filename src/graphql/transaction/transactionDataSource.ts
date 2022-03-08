@@ -109,4 +109,53 @@ export class TransactionDataSource extends DataSource {
 
     return transaction
   }
+
+  async getMyPortfolio(userId: string): Promise<TransactionPortfolio> {
+    const buyingPower = await this.prisma.transaction.aggregate({
+      _sum: {
+        amount: true,
+      },
+      where: {
+        userId,
+      },
+    })
+    if (!buyingPower?._sum?.amount) {
+      throw new ApolloError("Cannot get total buying power")
+    }
+
+    const assetAllocation = await this.prisma.transaction.groupBy({
+      by: ["symbol"],
+      _sum: {
+        amount: true,
+      },
+      having: {
+        amount: {
+          _sum: {
+            gt: 0,
+          },
+        },
+      },
+      where: {
+        userId,
+        symbol: {
+          not: "PHP",
+        },
+      },
+    })
+    if (!assetAllocation) {
+      throw new ApolloError("Cannot get asset allocations")
+    }
+
+    return {
+      buyingPower: buyingPower._sum.amount,
+      assetAllocation: assetAllocation.map((a) => {
+        const asset: AssetAllocation = {
+          symbol: a.symbol,
+          total: a._sum.amount as number,
+        }
+
+        return asset
+      }),
+    }
+  }
 }
