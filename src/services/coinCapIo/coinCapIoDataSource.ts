@@ -34,14 +34,14 @@ export class CoinCapIoDataSource extends RESTDataSource {
     }
   }
 
-  async getAsset(id: string): Promise<CoinCapIo_Asset | undefined> {
+  async getAsset(id: string): Promise<CoinCapIo_Asset | null> {
     try {
       const response: CoinCapIo_Asset_Result = await this.get(
         this.baseURL + "assets/" + id
       )
-      return response.data
+      return response.data ? response.data : null
     } catch (e) {
-      this.throwFailError()
+      return null
     }
   }
 
@@ -65,14 +65,14 @@ export class CoinCapIoDataSource extends RESTDataSource {
     }
   }
 
-  async getRate(id: string): Promise<CoinCapIo_Rate | undefined> {
+  async getRate(id: string): Promise<CoinCapIo_Rate | null> {
     try {
       const response: CoinCapIo_Rate_Result = await this.get(
         this.baseURL + "rates/" + id
       )
-      return response.data
+      return response.data ? response.data : null
     } catch (e) {
-      this.throwFailError()
+      return null
     }
   }
 }

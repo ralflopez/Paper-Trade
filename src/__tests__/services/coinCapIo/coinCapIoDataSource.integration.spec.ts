@@ -28,6 +28,11 @@ describe("getAsset", () => {
     expect(result).toBeDefined()
     expect(result).toEqual(expect.objectContaining({ symbol: "BTC" }))
   })
+
+  it("should return null if asset doesnt exist", async () => {
+    const result = await coinCapIoDataSource.getAsset("blahblah")
+    expect(result).toBeFalsy()
+  })
 })
 
 describe("getRates", () => {
@@ -45,5 +50,10 @@ describe("getRate", () => {
     const result = await coinCapIoDataSource.getRate("philippine-peso")
     expect(result).toBeDefined()
     expect(result).toEqual(expect.objectContaining({ symbol: "PHP" }))
+  })
+
+  it("should return null if not found", async () => {
+    const result = await coinCapIoDataSource.getRate("blahblah")
+    expect(result).toBeFalsy()
   })
 })
