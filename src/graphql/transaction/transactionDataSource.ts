@@ -85,10 +85,10 @@ export class TransactionDataSource extends DataSource {
     const transaction = this.prisma.transaction.create({
       data: {
         amount,
-        symbol: "PHP",
+        symbol: "USD",
         type: TransactionType.DEPOSIT,
         userId,
-        assetId: "philippine-peso",
+        assetId: "united-states-dollar",
         assetType: AssetType.FIAT,
       },
     })
@@ -100,10 +100,10 @@ export class TransactionDataSource extends DataSource {
     const transaction = await this.prisma.transaction.create({
       data: {
         amount: this.toNegative(amount),
-        symbol: "PHP",
+        symbol: "USD",
         type: TransactionType.WITHDRAW,
         userId,
-        assetId: "philippine-peso",
+        assetId: "united-states-dollar",
         assetType: AssetType.FIAT,
       },
     })
@@ -153,7 +153,7 @@ export class TransactionDataSource extends DataSource {
       where: {
         userId,
         symbol: {
-          not: "PHP",
+          not: "USD",
         },
       },
     })
