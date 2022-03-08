@@ -7,6 +7,11 @@ input AssetAllocationInput {
   total: Float!
 }
 
+enum AssetType {
+  CRYPTO
+  FIAT
+}
+
 """Return data for authenticated users"""
 type AuthPayload {
   token: String!
@@ -79,7 +84,10 @@ input SignupInput {
 """Keep tracks of buy, sell, deposit and withdraw actions of a user"""
 type Transaction {
   amount: Float!
+  assetId: String!
+  assetType: AssetType!
   id: ID!
+  symbol: String!
   timestamp: DateTime!
   type: TransactionType!
   user: User!

@@ -62,6 +62,7 @@ export interface NexusGenInputs {
 }
 
 export interface NexusGenEnums {
+  AssetType: "CRYPTO" | "FIAT"
   Role: "ADMIN" | "USER"
   TransactionType: "BUY" | "DEPOSIT" | "SELL" | "WITHDRAW"
 }
@@ -85,7 +86,10 @@ export interface NexusGenObjects {
   Query: {};
   Transaction: { // root type
     amount: number; // Float!
+    assetId: string; // String!
+    assetType: NexusGenEnums['AssetType']; // AssetType!
     id: string; // ID!
+    symbol: string; // String!
     timestamp: NexusGenScalars['DateTime']; // DateTime!
     type: NexusGenEnums['TransactionType']; // TransactionType!
     userId: string; // String!
@@ -133,7 +137,10 @@ export interface NexusGenFieldTypes {
   }
   Transaction: { // field return type
     amount: number; // Float!
+    assetId: string; // String!
+    assetType: NexusGenEnums['AssetType']; // AssetType!
     id: string; // ID!
+    symbol: string; // String!
     timestamp: NexusGenScalars['DateTime']; // DateTime!
     type: NexusGenEnums['TransactionType']; // TransactionType!
     user: NexusGenRootTypes['User']; // User!
@@ -172,7 +179,10 @@ export interface NexusGenFieldTypeNames {
   }
   Transaction: { // field return type name
     amount: 'Float'
+    assetId: 'String'
+    assetType: 'AssetType'
     id: 'ID'
+    symbol: 'String'
     timestamp: 'DateTime'
     type: 'TransactionType'
     user: 'User'

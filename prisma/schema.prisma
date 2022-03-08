@@ -46,6 +46,6 @@ model Transaction {
   amount    Float
   symbol    String
   assetId   String
-  assetType AssetType
+  assetType AssetType       @default(FIAT)
   type      TransactionType
 }
