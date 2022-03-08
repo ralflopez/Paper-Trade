@@ -142,6 +142,7 @@ export interface NexusGenFieldTypes {
     logout: boolean | null; // Boolean
     myPortfolio: NexusGenRootTypes['PortfolioOutput'] | null; // PortfolioOutput
     refreshToken: NexusGenRootTypes['AuthPayload'] | null; // AuthPayload
+    test: string | null; // String
     transactions: NexusGenRootTypes['Transaction'][]; // [Transaction!]!
   }
   Transaction: { // field return type
@@ -193,6 +194,7 @@ export interface NexusGenFieldTypeNames {
     logout: 'Boolean'
     myPortfolio: 'PortfolioOutput'
     refreshToken: 'AuthPayload'
+    test: 'String'
     transactions: 'Transaction'
   }
   Transaction: { // field return type name

@@ -67,6 +67,9 @@ type Query {
   myPortfolio: PortfolioOutput
   refreshToken: AuthPayload
 
+  """A query to test if endpoint can be reached"""
+  test: String
+
   """Returns all transactions in the ledger"""
   transactions: [Transaction!]!
 }

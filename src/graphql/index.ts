@@ -1,4 +1,6 @@
 /* GraphQL Schemas */
+export * from "./test/testResolver"
+
 export * from "./user/User"
 export * from "./user/userInput"
 export * from "./user/userResolver"
