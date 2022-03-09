@@ -6,10 +6,11 @@
   "scripts": {
     "test": "jest -i",
     "dev": "ts-node --transpile-only src/index.ts",
+    "build": "tsc",
     "dev:debug": "ts-node --transpile-only --inspect src/index.ts",
     "nexus:generate": "ts-node --transpile-only src/schema.ts",
     "prisma:generate": "npx prisma generate",
-    "schema:generate": "npm run nexus:generate && npm run prisma:generate",
+    "schema:generate": "npm run prisma:generate && npm run nexus:generate",
     "dev:generate": "npm run schema:generate && npm run dev"
   },
   "keywords": [],

@@ -26,7 +26,7 @@ export function createApolloServer() {
     origin: [
       "https://studio.apollographql.com",
       "http://localhost:3000",
-      process.env.CLIENT_URL,
+      process.env.CLIENT_URL || "",
     ],
     credentials: true,
   }

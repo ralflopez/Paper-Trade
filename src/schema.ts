@@ -5,16 +5,14 @@ import { applyMiddleware } from "graphql-middleware"
 import { permissions } from "./graphql/auth/permissions"
 import { GraphQLSchema } from "graphql"
 
-const ROOT_RELATIVE_PATH = join(__dirname, "..")
-
 const nexusSchema = makeSchema({
   types,
   outputs: {
-    schema: join(ROOT_RELATIVE_PATH, "schema.graphql"),
-    typegen: join(ROOT_RELATIVE_PATH, "nexus-typegen.ts"),
+    schema: join(process.cwd(), "schema.graphql"),
+    typegen: join(process.cwd(), "nexus-typegen.ts"),
   },
   contextType: {
-    module: join(__dirname, "./config/context.ts"),
+    module: join(process.cwd(), "src/config/context.ts"),
     export: "Context",
   },
 }) as unknown as GraphQLSchema
