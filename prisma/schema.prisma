@@ -44,7 +44,7 @@ model Transaction {
   userId    String
   user      User            @relation(fields: [userId], references: [id])
   amount    Float
-  value     Float
+  valueUsd  Float
   symbol    String
   assetId   String
   assetType AssetType       @default(FIAT)
