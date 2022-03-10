@@ -17,4 +17,4 @@ const nexusSchema = makeSchema({
   },
 }) as unknown as GraphQLSchema
 
-export const schema = applyMiddleware(nexusSchema /*permissions*/)
+export const schema = applyMiddleware(nexusSchema, permissions)

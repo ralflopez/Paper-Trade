@@ -5,6 +5,7 @@ export const permissions = shield(
   {
     Query: {
       refreshToken: allow,
+      test: allow,
       getUsers: isAdmin,
       getMyUser: isSelf,
       "*": isAuthenticated,
