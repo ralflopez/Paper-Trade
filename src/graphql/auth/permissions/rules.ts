@@ -37,7 +37,6 @@ export const isSelf = and(isAuthenticated, selfRule)
 const adminRule = rule({
   /* cache: "contextual" */
 })(async (_parent, _args, context: Context) => {
-  console.log("OK")
   const id = context.user?.id
   if (!id) throw new AuthenticationError("No token provided")
 
