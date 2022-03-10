@@ -42,7 +42,8 @@ export class TransactionDataSource extends DataSource {
     userId: string,
     amount: number,
     symbol: string,
-    assetId: string
+    assetId: string,
+    valueUsd: number
   ): Promise<Transaction> {
     if (amount < 0) throw new UserInputError("Amount cannot be negative")
 
@@ -54,6 +55,7 @@ export class TransactionDataSource extends DataSource {
         userId,
         assetId,
         assetType: AssetType.CRYPTO,
+        valueUsd,
       },
     })
 
@@ -64,7 +66,8 @@ export class TransactionDataSource extends DataSource {
     userId: string,
     amount: number,
     symbol: string,
-    assetId: string
+    assetId: string,
+    valueUsd: number
   ): Promise<Transaction> {
     const transaction = await this.prisma.transaction.create({
       data: {
@@ -74,6 +77,7 @@ export class TransactionDataSource extends DataSource {
         userId,
         assetId,
         assetType: AssetType.CRYPTO,
+        valueUsd,
       },
     })
 
@@ -86,6 +90,7 @@ export class TransactionDataSource extends DataSource {
       data: {
         amount,
         symbol: "USD",
+        valueUsd: 1,
         type: TransactionType.DEPOSIT,
         userId,
         assetId: "united-states-dollar",
@@ -101,6 +106,7 @@ export class TransactionDataSource extends DataSource {
       data: {
         amount: this.toNegative(amount),
         symbol: "USD",
+        valueUsd: 1,
         type: TransactionType.WITHDRAW,
         userId,
         assetId: "united-states-dollar",
@@ -111,67 +117,38 @@ export class TransactionDataSource extends DataSource {
     return transaction
   }
 
-  async getMyTransactions(
-    userId: string,
-    transactionId?: string
-  ): Promise<Transaction[]> {
-    const transaction = await this.prisma.transaction.findMany({
-      where: {
-        id: transactionId,
-        userId,
-      },
-    })
+  async getMyTransactions(userId: string): Promise<Transaction[]> {
+    try {
+      const transaction = await this.prisma.transaction.findMany({
+        where: {
+          userId,
+        },
+      })
 
-    return transaction
+      return transaction
+    } catch (e) {
+      throw new ApolloError("Cannot get transaction information at the moment")
+    }
   }
 
-  async getMyPortfolio(userId: string): Promise<TransactionPortfolio> {
-    const buyingPower = await this.prisma.transaction.aggregate({
-      _sum: {
-        amount: true,
-      },
-      where: {
-        userId,
-      },
-    })
-    if (!buyingPower?._sum?.amount) {
-      throw new ApolloError("Cannot get total buying power")
-    }
+  async getMyPortfolio(userId: string): Promise<PortfolioSummary> {
+    try {
+      const buyingPowerQuery: BuyingPowerQuery[] = await this.prisma
+        .$queryRaw`SELECT SUM(amount * "valueUsd") FROM "Transaction"`
 
-    const assetAllocation = await this.prisma.transaction.groupBy({
-      by: ["symbol", "assetId"],
-      _sum: {
-        amount: true,
-      },
-      having: {
-        amount: {
-          _sum: {
-            gt: 0,
-          },
-        },
-      },
-      where: {
-        userId,
-        symbol: {
-          not: "USD",
-        },
-      },
-    })
-    if (!assetAllocation) {
-      throw new ApolloError("Cannot get asset allocations")
-    }
+      const assetAllocationQuery: AssetAllocationQuery[] = await this.prisma
+        .$queryRaw`SELECT symbol, "assetId", SUM(amount*-1) as total, AVG("valueUsd") as average FROM "Transaction" GROUP BY symbol, "assetId" HAVING SUM(amount*-1) > 0`
 
-    return {
-      buyingPower: buyingPower._sum.amount,
-      assetAllocation: assetAllocation.map((a) => {
-        const asset: AssetAllocation = {
-          symbol: a.symbol,
-          assetId: a.assetId,
-          total: a._sum.amount as number,
-        }
+      const portfolioSummary: PortfolioSummary = {
+        allocation: assetAllocationQuery,
+        buyingPower: buyingPowerQuery[0]?.sum || 0,
+      }
 
-        return asset
-      }),
+      return portfolioSummary
+    } catch (e) {
+      throw new ApolloError(
+        "Unable to get your portfolio information at the moment"
+      )
     }
   }
 }

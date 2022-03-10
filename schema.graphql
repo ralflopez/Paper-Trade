@@ -3,6 +3,8 @@
 
 
 type AssetAllocationOutput {
+  assetId: String!
+  average: Float!
   symbol: String!
   total: Float!
 }
@@ -62,16 +64,10 @@ type Query {
   getUser(id: ID!): User
   getUsers: [User!]!
   logout: Boolean
-
-  """a summary of all assets owned by the user"""
-  myPortfolio: PortfolioOutput
   refreshToken: AuthPayload
 
   """A query to test if endpoint can be reached"""
   test: String
-
-  """Returns all transactions in the ledger"""
-  transactions: [Transaction!]!
 }
 
 """Role of the User"""
@@ -98,6 +94,7 @@ type Transaction {
   type: TransactionType!
   user: User!
   userId: String!
+  valueUsd: Float!
 }
 
 enum TransactionType {

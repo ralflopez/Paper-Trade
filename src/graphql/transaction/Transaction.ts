@@ -12,6 +12,7 @@ export const Transaction = objectType({
       type: "TransactionType",
     })
     t.nonNull.float("amount")
+    t.nonNull.float("valueUsd")
     t.nonNull.string("symbol")
     t.nonNull.string("assetId")
     t.nonNull.field("assetType", {
@@ -31,8 +32,9 @@ export const AssetAllocationOutput = objectType({
   name: "AssetAllocationOutput",
   definition(t) {
     t.nonNull.string("symbol")
+    t.nonNull.string("assetId")
     t.nonNull.float("total")
-    t.nonNull.float("total")
+    t.nonNull.float("average")
   },
 })
 

@@ -1,9 +1,15 @@
-interface AssetAllocation {
+interface BuyingPowerQuery {
+  sum: number
+}
+
+interface AssetAllocationQuery {
   symbol: string
   assetId: string
   total: number
+  average: number
 }
-interface TransactionPortfolio {
+
+interface PortfolioSummary {
   buyingPower: number
-  assetAllocation: AssetAllocation[]
+  allocation: AssetAllocationQuery[]
 }

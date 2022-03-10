@@ -1,138 +1,191 @@
-import { AssetType, TransactionType, User } from "@prisma/client"
+/**
+ * An integration test between the application and database layer
+ */
+import { TransactionDataSource } from "../../../graphql/transaction/transactionDataSource"
 import { prisma } from "../../../config/prisma/client"
-import { TransactionDataSource } from "../../../graphql"
+import { AssetType, TransactionType } from "@prisma/client"
+import { UserInputError } from "apollo-server-errors"
 
 let transactionDataSource: TransactionDataSource
-let user: User
+let userId: string
 
 beforeAll(async () => {
   transactionDataSource = new TransactionDataSource({ prisma })
 
-  // seed
-  user = await prisma.user.create({
+  // create user
+  const user = await prisma.user.create({
     data: {
       email: "test@email.com",
       name: "name",
-      password: "password",
+      password: "password123",
     },
   })
 
+  userId = user.id
+
+  // create transactions
   await prisma.transaction.createMany({
     data: [
       {
-        amount: 20000,
-        symbol: "PHP",
+        amount: 100000,
+        assetId: "united-states-dollar",
+        symbol: "USD",
         type: TransactionType.DEPOSIT,
-        userId: user.id,
-        assetId: "philippine-peso",
+        userId,
         assetType: AssetType.FIAT,
+        valueUsd: 1,
       },
       {
-        amount: -10000,
+        amount: -10,
+        assetId: "bitcoin",
         symbol: "BTC",
         type: TransactionType.BUY,
-        userId: user.id,
-        assetId: "bitcoin",
+        userId,
         assetType: AssetType.CRYPTO,
+        valueUsd: 100,
       },
       {
-        amount: 12000,
-        symbol: "BTC",
-        type: TransactionType.SELL,
-        userId: user.id,
-        assetId: "bitcoin",
+        amount: -20,
+        assetId: "etherium",
+        symbol: "ETH",
+        type: TransactionType.BUY,
+        userId,
         assetType: AssetType.CRYPTO,
+        valueUsd: 50,
       },
       {
-        amount: -5000,
-        symbol: "PHP",
+        amount: -100,
+        assetId: "dodgecoin",
+        symbol: "DODGE",
+        type: TransactionType.BUY,
+        userId,
+        assetType: AssetType.CRYPTO,
+        valueUsd: 1,
+      },
+      {
+        amount: -20000,
+        assetId: "united-states-dollar",
+        symbol: "USD",
         type: TransactionType.WITHDRAW,
-        userId: user.id,
-        assetId: "philippine-peso",
+        userId,
         assetType: AssetType.FIAT,
+        valueUsd: 1,
       },
       {
-        amount: -5000,
-        symbol: "ETH",
-        type: TransactionType.BUY,
-        userId: user.id,
+        amount: 1,
         assetId: "etherium",
-        assetType: AssetType.CRYPTO,
-      },
-      {
-        amount: 2000,
         symbol: "ETH",
         type: TransactionType.SELL,
-        userId: user.id,
-        assetId: "etherium",
+        userId,
         assetType: AssetType.CRYPTO,
+        valueUsd: 40,
+      },
+      {
+        amount: -5,
+        assetId: "bitcoin",
+        symbol: "BTC",
+        type: TransactionType.BUY,
+        userId,
+        assetType: AssetType.CRYPTO,
+        valueUsd: 105,
       },
     ],
   })
 })
 
-beforeEach(() => {
-  jest
-    .spyOn(TransactionDataSource.prototype as any, "getUserId")
-    .mockImplementation(() => user.id)
-})
-
 afterAll(async () => {
-  await prisma.transaction.deleteMany()
-  await prisma.user.deleteMany()
+  const deleteTransactions = prisma.transaction.deleteMany()
+  const deleteUsers = prisma.user.deleteMany()
+
+  await prisma.$transaction([deleteTransactions, deleteUsers])
+
+  await prisma.$disconnect()
 })
 
-describe("buy", () => {
-  it("should return a record where amount is negative", async () => {
-    const result = await transactionDataSource.buy(
-      user.id,
-      100,
-      "ETH",
-      "etherium"
-    )
-    expect(result).toEqual(
-      expect.objectContaining({ amount: -100, symbol: "ETH" })
-    )
-  })
-})
+describe("getMyTransactions", () => {
+  it("should return a list", async () => {
+    const result = await transactionDataSource.getMyTransactions(userId)
 
-describe("sell", () => {
-  it("should return a record where amount is positive", async () => {
-    const result = await transactionDataSource.sell(
-      user.id,
-      100,
-      "ETH",
-      "etherium"
-    )
-    expect(result).toEqual(
-      expect.objectContaining({ amount: 100, symbol: "ETH" })
-    )
-  })
-})
-
-describe("deposit", () => {
-  it("should return a record where amount is positive", async () => {
-    const result = await transactionDataSource.deposit(user.id, 100)
-    expect(result).toEqual(expect.objectContaining({ amount: 100 }))
-  })
-})
-
-describe("withdraw", () => {
-  it("should return a record where amount is negative", async () => {
-    const result = await transactionDataSource.withdraw(user.id, 100)
-    expect(result).toEqual(expect.objectContaining({ amount: -100 }))
+    expect(Array.isArray(result)).toBeTruthy()
   })
 })
 
 describe("getMyPortfolio", () => {
-  it("should return the right type", async () => {
-    const result = await transactionDataSource.getMyPortfolio(user.id)
+  it("prisma should return buying power", async () => {
+    const result: BuyingPowerQuery[] =
+      await prisma.$queryRaw`SELECT SUM(amount * "valueUsd") FROM "Transaction"`
+
+    expect(result[0].sum).toBe(77415)
+  })
+
+  it("prisma should return allocatoin of assets", async () => {
+    const result: AssetAllocationQuery =
+      await prisma.$queryRaw`SELECT symbol, "assetId", SUM(amount*-1) as total, AVG("valueUsd") as average FROM "Transaction" GROUP BY symbol, "assetId" HAVING SUM(amount*-1) > 0`
+
+    console.log(result)
     expect(result).toBeDefined()
-    expect(result?.buyingPower).toEqual(14000)
-    expect(result.assetAllocation).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({ symbol: "BTC", total: 2000 }),
-      ])
+  })
+
+  it("should return the correct data", async () => {
+    const result = await transactionDataSource.getMyPortfolio(userId)
+
+    expect(result).toHaveProperty("buyingPower")
+    expect(result).toHaveProperty("allocation")
+  })
+})
+
+describe("getMyTransaction", () => {
+  it("should return a list of transactions", async () => {
+    const result = await transactionDataSource.getMyTransactions(userId)
+
+    expect(Array.isArray(result)).toBeTruthy()
+  })
+})
+
+describe("buy", () => {
+  it("should return the saved transaction", async () => {
+    const result = await transactionDataSource.buy(
+      userId,
+      1,
+      "BTC",
+      "bitcoin",
+      1000
     )
+
+    expect(result).toHaveProperty("amount", -1)
+    expect(result).toHaveProperty("symbol", "BTC")
+  })
+})
+
+describe("sell", () => {
+  it("should return the saved transaction", async () => {
+    const result = await transactionDataSource.sell(
+      userId,
+      1,
+      "BTC",
+      "bitcoin",
+      1000
+    )
+
+    expect(result).toHaveProperty("amount", 1)
+    expect(result).toHaveProperty("symbol", "BTC")
+  })
+})
+
+describe("deposit", () => {
+  it("should return the saved transaction", async () => {
+    const result = await transactionDataSource.deposit(userId, 100)
+
+    expect(result).toHaveProperty("amount", 100)
+    expect(result).toHaveProperty("symbol", "USD")
+  })
+})
+
+describe("withdraw", () => {
+  it("should return the saved transaction", async () => {
+    const result = await transactionDataSource.withdraw(userId, 100)
+
+    expect(result).toHaveProperty("amount", -100)
+    expect(result).toHaveProperty("symbol", "USD")
   })
 })

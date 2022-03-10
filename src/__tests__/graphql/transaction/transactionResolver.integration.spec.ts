@@ -1,382 +1,261 @@
-import { Express } from "express"
-import { createApolloServer } from "../../../index"
-import request, { Response } from "supertest"
-import { createAccessToken } from "../../../vendor/victoriris/authUtil"
+/**
+ * An integration test between the application and web layer
+ */
+import { Response } from "supertest"
+import {
+  createMockContext,
+  MockContext,
+} from "../../../config/prisma/testClient"
 import { TransactionDataSource } from "../../../graphql"
+import request from "supertest"
+import { Express } from "express"
+import { createApolloServer } from "../../.."
+import { gql } from "apollo-server-core"
 import { CoinCapIoDataSource } from "../../../services/coinCapIo/coinCapIoDataSource"
-import { createContext } from "../../../config/context"
 import { AssetType, Transaction, TransactionType } from "@prisma/client"
+import { isAuthenticated } from "../../../graphql/auth/permissions/rules"
+import { createContext } from "../../../config/context"
 
+// mock authenticate request
+jest.mock("../../../graphql/auth/permissions/rules", () => ({
+  ...jest.requireActual("../../../graphql/auth/permissions/rules"),
+  isAuthenticated: jest.fn().mockResolvedValue(true),
+}))
+
+// mock context
 jest.mock("../../../config/context", () => ({
   ...jest.requireActual("../../../config/context"),
   createContext: jest.fn(),
 }))
 
+// setup
 let app: Express
-let userId: string
 let transactionDataSource: TransactionDataSource
 let coinCapIoDataSource: CoinCapIoDataSource
 
-jest.setTimeout(10000)
-
-beforeAll(async () => {
-  const { app: expressApp } = createApolloServer()
-  app = expressApp
-})
-
 beforeAll(() => {
+  app = createApolloServer().app
   transactionDataSource = new TransactionDataSource({ prisma: {} as any })
   coinCapIoDataSource = new CoinCapIoDataSource({ redisClient: {} as any })
-  ;(createContext as any).mockResolvedValue({
+  ;(createContext as jest.Mock).mockResolvedValue({
     user: { id: "123" },
     dataSources: {
-      coinCapIo: coinCapIoDataSource,
       transaction: transactionDataSource,
+      coinCapIo: coinCapIoDataSource,
     },
   })
 })
 
+// mock objects
+const coinCapAssetMock: CoinCapIo_Asset = {
+  changePercent24Hr: "1",
+  explorer: "1",
+  id: "bitcoin",
+  marketCapUsd: "1",
+  maxSupply: "1",
+  name: "bitcoin",
+  priceUsd: "1",
+  rank: "1",
+  supply: "1",
+  symbol: "BTC",
+  volumeUsd24Hr: "1",
+  vwap24Hr: "1",
+}
+
+const portfolioSummaryMock: PortfolioSummary = {
+  allocation: [{ assetId: "bitcoin", average: 100, symbol: "BTC", total: 999 }],
+  buyingPower: 999999,
+}
+
+const assetAllocationMock: AssetAllocationQuery = {
+  assetId: "bitcoin",
+  average: 100,
+  symbol: "BTC",
+  total: 1,
+}
+
+// helpers
+function createTransaction(
+  assetType: AssetType,
+  transactionType: TransactionType
+): Transaction {
+  return {
+    amount:
+      transactionType == TransactionType.BUY ||
+      transactionType == TransactionType.WITHDRAW
+        ? -1
+        : 1,
+    assetId: assetType == AssetType.CRYPTO ? "bitcoin" : "united-states-dollar",
+    assetType,
+    id: "id",
+    symbol: assetType == AssetType.CRYPTO ? "BTC" : "USD",
+    timestamp: new Date(Date.now()),
+    type: transactionType,
+    userId: "123",
+    valueUsd: 1,
+  }
+}
+
+function createRequest(body: { query: string; variables?: any }) {
+  return request(app)
+    .post("/graphql")
+    .set("Content-Type", "application/json")
+    .send(body)
+}
+
+// test
 describe("buy", () => {
-  it("should return the correct data", async () => {
-    coinCapIoDataSource.getAsset = jest.fn().mockResolvedValue({
-      id: "bitcoin",
-      rank: "1",
-      symbol: "BTC",
-      name: "Bitcoin",
-      supply: "18977362.0000000000000000",
-      maxSupply: "21000000.0000000000000000",
-      marketCapUsd: "738609479365.0710107161781780",
-      volumeUsd24Hr: "14494859551.1954554049017945",
-      priceUsd: "38920.5559426579421690",
-      changePercent24Hr: "1.6550215183754409",
-      vwap24Hr: "38630.9866031708526347",
-      explorer: "https://blockchain.info/",
-    })
+  it("should return the saved transaction", async () => {
+    // given
+    coinCapIoDataSource.getAsset = jest
+      .fn()
+      .mockResolvedValueOnce(coinCapAssetMock)
+    transactionDataSource.getMyPortfolio = jest
+      .fn()
+      .mockResolvedValueOnce(portfolioSummaryMock)
+    transactionDataSource.buy = jest
+      .fn()
+      .mockResolvedValueOnce(
+        createTransaction(AssetType.CRYPTO, TransactionType.BUY)
+      )
 
-    transactionDataSource.getMyPortfolio = jest.fn().mockResolvedValue({
-      buyingPower: 100,
-      assetAllocation: [],
-    })
-
-    transactionDataSource.buy = jest.fn().mockResolvedValue({
-      amount: -100,
-      assetId: "bitcoin",
-      assetType: AssetType.CRYPTO,
-      id: "1234",
-      symbol: "BTC",
-      timestamp: new Date(Date.now()),
-      type: TransactionType.BUY,
-      userId: "123",
-    } as Transaction)
-
-    const response: Response = await request(app)
-      .post("/graphql")
-      .set("Content-Type", "application/json")
-      .set("Authorization", "Bearer " + createAccessToken({ userId }))
-      .send({
-        query: `
-          mutation Buy($amount: Float!, $assetId: String!) {
-            buy(amount: $amount, assetId: $assetId) {
-              amount
-              assetId
-              userId
-            }
+    // when
+    const response: Response = await createRequest({
+      query: `
+        mutation Buy($amount: Float!, $assetId: String!) {
+          buy(amount: $amount, assetId: $assetId) {
+            amount
+            symbol
           }
-        `,
-        variables: {
-          amount: 100,
-          assetId: "bitcoin",
-        },
-      })
+        }
+      `,
+      variables: {
+        amount: 100,
+        assetId: "bitcoin",
+      },
+    })
 
+    // then
     const result = JSON.parse(response.text)
 
-    expect(result.errors).toBeUndefined()
     expect(result.data.buy).toEqual(
-      expect.objectContaining({
-        amount: -100,
-        assetId: "bitcoin",
-        userId: "123",
-      })
+      expect.objectContaining({ amount: -1, symbol: "BTC" })
     )
   })
 })
 
 describe("sell", () => {
-  it("should return the correct data", async () => {
-    coinCapIoDataSource.getAsset = jest.fn().mockResolvedValue({
-      id: "bitcoin",
-      rank: "1",
-      symbol: "BTC",
-      name: "Bitcoin",
-      supply: "18977362.0000000000000000",
-      maxSupply: "21000000.0000000000000000",
-      marketCapUsd: "738609479365.0710107161781780",
-      volumeUsd24Hr: "14494859551.1954554049017945",
-      priceUsd: "38920.5559426579421690",
-      changePercent24Hr: "1.6550215183754409",
-      vwap24Hr: "38630.9866031708526347",
-      explorer: "https://blockchain.info/",
-    })
+  it("should return the saved transaction", async () => {
+    // given
+    transactionDataSource.getMyPortfolio = jest
+      .fn()
+      .mockResolvedValueOnce(portfolioSummaryMock)
 
-    transactionDataSource.getMyPortfolio = jest.fn().mockResolvedValue({
-      buyingPower: 100,
-      assetAllocation: [{ symbol: "BTC", assetId: "bitcoin", total: 100 }],
-    })
+    const a: any = jest.fn() // portfolio
+    const b: any = (a.allocation = jest.fn()) // .allocation
+    b.find = jest.fn().mockReturnValue(assetAllocationMock)
 
-    const a: any = jest.fn()
-    const b: any = (a.assetAllocation = jest.fn())
-    b.find = jest.fn().mockReturnValue({
-      assetId: "bitcoin",
-      symbol: "BTC",
-      total: 100,
-    } as AssetAllocation)
+    coinCapIoDataSource.getAsset = jest
+      .fn()
+      .mockResolvedValueOnce(coinCapAssetMock)
 
-    transactionDataSource.sell = jest.fn().mockResolvedValue({
-      amount: 100,
-      assetId: "bitcoin",
-      assetType: AssetType.CRYPTO,
-      id: "1234",
-      symbol: "BTC",
-      timestamp: new Date(Date.now()),
-      type: TransactionType.BUY,
-      userId: "123",
-    } as Transaction)
+    transactionDataSource.sell = jest
+      .fn()
+      .mockResolvedValueOnce(
+        createTransaction(AssetType.CRYPTO, TransactionType.SELL)
+      )
 
-    const response: Response = await request(app)
-      .post("/graphql")
-      .set("Content-Type", "application/json")
-      .set("Authorization", "Bearer " + createAccessToken({ userId }))
-      .send({
-        query: `
-          mutation Sell($amount: Float!, $assetId: String!) {
-            sell(amount: $amount, assetId: $assetId) {
-              amount
-              assetId
-              userId
-            }
+    // when
+    const response: Response = await createRequest({
+      query: `
+        mutation Sell($amount: Float!, $assetId: String!) {
+          sell(amount: $amount, assetId: $assetId) {
+            amount
+            symbol
           }
-        `,
-        variables: {
-          amount: 100,
-          assetId: "bitcoin",
-        },
-      })
-
-    const result = JSON.parse(response.text)
-    expect(result.errors).toBeUndefined()
-    expect(result.data.sell).toEqual(
-      expect.objectContaining({
-        amount: 100,
+        }
+      `,
+      variables: {
+        amount: 1,
         assetId: "bitcoin",
-        userId: "123",
-      })
+      },
+    })
+
+    // then
+    const result = JSON.parse(response.text)
+
+    expect(result.data.sell).toEqual(
+      expect.objectContaining({ amount: 1, symbol: "BTC" })
     )
   })
 })
 
 describe("deposit", () => {
-  it("should return the correct data", async () => {
-    transactionDataSource.deposit = jest.fn().mockResolvedValue({
-      amount: 100,
-      assetId: "united-states-dollar",
-      assetType: AssetType.FIAT,
-      id: "1234",
-      symbol: "USD",
-      timestamp: new Date(Date.now()),
-      type: TransactionType.DEPOSIT,
-      userId: "123",
-    } as Transaction)
+  it("should return the saved transaction", async () => {
+    // given
+    transactionDataSource.deposit = jest
+      .fn()
+      .mockResolvedValueOnce(
+        createTransaction(AssetType.FIAT, TransactionType.DEPOSIT)
+      )
 
-    const response: Response = await request(app)
-      .post("/graphql")
-      .set("Content-Type", "application/json")
-      .set("Authorization", "Bearer " + createAccessToken({ userId }))
-      .send({
-        query: `
-          mutation Deposit($amount: Float!) {
-            deposit(amount: $amount) {
-              amount
-              assetId
-              userId
-            }
+    // when
+    const response: Response = await createRequest({
+      query: `
+        mutation Deposit($amount: Float!) {
+          deposit(amount: $amount) {
+            amount
+            symbol
           }
-        `,
-        variables: {
-          amount: 100,
-          assetId: "united-states-dollar",
-        },
-      })
+        }
+      `,
+      variables: {
+        amount: 1,
+      },
+    })
 
+    // then
     const result = JSON.parse(response.text)
 
-    expect(result.errors).toBeUndefined()
     expect(result.data.deposit).toEqual(
-      expect.objectContaining({
-        amount: 100,
-        assetId: "united-states-dollar",
-        userId: "123",
-      })
+      expect.objectContaining({ amount: 1, symbol: "USD" })
     )
   })
 })
 
 describe("withdraw", () => {
-  it("should return the correct data", async () => {
-    transactionDataSource.withdraw = jest.fn().mockResolvedValue({
-      amount: -100,
-      assetId: "united-states-dollar",
-      assetType: AssetType.FIAT,
-      id: "1234",
-      symbol: "USD",
-      timestamp: new Date(Date.now()),
-      type: TransactionType.WITHDRAW,
-      userId: "123",
-    } as Transaction)
+  it("should return the saved transaction", async () => {
+    // given
+    transactionDataSource.getMyPortfolio = jest
+      .fn()
+      .mockResolvedValueOnce(portfolioSummaryMock)
 
-    const response: Response = await request(app)
-      .post("/graphql")
-      .set("Content-Type", "application/json")
-      .set("Authorization", "Bearer " + createAccessToken({ userId }))
-      .send({
-        query: `
-          mutation Withdraw($amount: Float!) {
-            withdraw(amount: $amount) {
-              amount
-              assetId
-              userId
-            }
+    transactionDataSource.withdraw = jest
+      .fn()
+      .mockResolvedValueOnce(
+        createTransaction(AssetType.FIAT, TransactionType.WITHDRAW)
+      )
+
+    // when
+    const response: Response = await createRequest({
+      query: `
+        mutation Withdraw($amount: Float!) {
+          withdraw(amount: $amount) {
+            amount
+            symbol
           }
-        `,
-        variables: {
-          amount: 100,
-          assetId: "united-states-dollar",
-        },
-      })
+        }
+      `,
+      variables: {
+        amount: 1,
+      },
+    })
 
+    // then
     const result = JSON.parse(response.text)
 
-    expect(result.errors).toBeUndefined()
     expect(result.data.withdraw).toEqual(
-      expect.objectContaining({
-        amount: -100,
-        assetId: "united-states-dollar",
-        userId: "123",
-      })
-    )
-  })
-})
-
-describe("transactions", () => {
-  it("should return the correct data", async () => {
-    transactionDataSource.getMyTransactions = jest.fn().mockResolvedValue([
-      {
-        amount: 100000,
-        assetId: "united-states-dollar",
-        assetType: AssetType.FIAT,
-        id: "1234",
-        symbol: "USD",
-        timestamp: new Date(Date.now()),
-        type: TransactionType.DEPOSIT,
-        userId: "123",
-      },
-      {
-        amount: 100,
-        assetId: "bitcoin",
-        assetType: AssetType.CRYPTO,
-        id: "12345",
-        symbol: "BTC",
-        timestamp: new Date(Date.now()),
-        type: TransactionType.BUY,
-        userId: "123",
-      },
-      {
-        amount: 1000,
-        assetId: "united-states-dollar",
-        assetType: AssetType.FIAT,
-        id: "1234",
-        symbol: "USD",
-        timestamp: new Date(Date.now()),
-        type: TransactionType.WITHDRAW,
-        userId: "123",
-      },
-    ] as Transaction[])
-
-    const response: Response = await request(app)
-      .post("/graphql")
-      .set("Content-Type", "application/json")
-      .set("Authorization", "Bearer " + createAccessToken({ userId }))
-      .send({
-        query: `
-          query Transactions {
-            transactions {
-              amount
-              assetId
-              userId  
-            }
-          }
-        `,
-      })
-
-    const result = JSON.parse(response.text)
-
-    expect(result.erros).toBeUndefined()
-    expect(result.data.transactions.length).toBe(3)
-    expect(result.data.transactions).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          amount: 1000,
-          assetId: "united-states-dollar",
-          userId: "123",
-        }),
-      ])
-    )
-  })
-})
-
-describe("transactions", () => {
-  it("should return the correct data", async () => {
-    transactionDataSource.getMyPortfolio = jest.fn().mockResolvedValue({
-      buyingPower: 100,
-      assetAllocation: [
-        {
-          assetId: "bitcoin",
-          symbol: "BTC",
-          total: 10,
-        },
-        {
-          assetId: "etherium",
-          symbol: "ETH",
-          total: 1,
-        },
-      ],
-    } as TransactionPortfolio)
-
-    const response: Response = await request(app)
-      .post("/graphql")
-      .set("Content-Type", "application/json")
-      .set("Authorization", "Bearer " + createAccessToken({ userId }))
-      .send({
-        query: `
-          query MyPortfolio {
-            myPortfolio {
-              buyingPower
-              assetAllocation {
-                symbol
-                total
-              }
-            }
-          }
-        `,
-      })
-
-    const result = JSON.parse(response.text)
-
-    expect(result.erros).toBeUndefined()
-    expect(result.data.myPortfolio).toEqual(
-      expect.objectContaining({
-        buyingPower: 100,
-      })
+      expect.objectContaining({ amount: -1, symbol: "USD" })
     )
   })
 })

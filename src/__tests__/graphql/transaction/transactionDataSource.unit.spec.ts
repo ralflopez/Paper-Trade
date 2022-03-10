@@ -1,4 +1,5 @@
 import { AssetType, Transaction, TransactionType } from "@prisma/client"
+import { UserInputError } from "apollo-server-errors"
 import {
   createMockContext,
   MockContext,
@@ -8,115 +9,111 @@ import { TransactionDataSource } from "../../../graphql"
 let mockCtx: MockContext
 let transactionDataSource: TransactionDataSource
 
+const transactionMock: Transaction = {
+  amount: 10,
+  assetId: "bitcoin",
+  assetType: AssetType.CRYPTO,
+  id: "1234",
+  symbol: "BTC",
+  timestamp: new Date(Date.now()),
+  type: TransactionType.BUY,
+  userId: "123",
+  valueUsd: 1000,
+}
+
+const transactionMockNegativeAmount: Transaction = {
+  ...transactionMock,
+  amount: -10,
+}
+
 beforeAll(() => {
+  console.log(1)
   mockCtx = createMockContext()
+  console.log(2)
   transactionDataSource = new TransactionDataSource({ prisma: mockCtx.prisma })
 })
 
-beforeEach(() => {
-  jest
-    .spyOn(TransactionDataSource.prototype as any, "getUserId")
-    .mockImplementation(() => "123")
-})
-
 describe("buy", () => {
-  it("should return transaction details", async () => {
-    const mockTransaction: Transaction = {
-      amount: -1,
-      id: "1",
-      symbol: "ABC",
-      timestamp: new Date(Date.now()),
-      type: TransactionType.BUY,
-      userId: "123",
-      assetId: "abc",
-      assetType: AssetType.CRYPTO,
-    }
-
-    mockCtx.prisma.transaction.create.mockResolvedValue(mockTransaction)
-
-    const returnedTransaction = await transactionDataSource.buy(
+  it("should return the saved transaction", async () => {
+    mockCtx.prisma.transaction.create.mockResolvedValue(
+      transactionMockNegativeAmount
+    )
+    const result = await transactionDataSource.buy(
       "123",
-      1,
-      "ABC",
-      "abc"
+      10,
+      "BTC",
+      "bitcoin",
+      1000
     )
 
-    expect(returnedTransaction.id).toBe(mockTransaction.id)
+    expect(result).toMatchObject(transactionMockNegativeAmount)
   })
 
-  // TODO: it("should throw if symbol is invalid")
+  it("should throw if amount is not positive", async () => {
+    mockCtx.prisma.transaction.create.mockResolvedValue(transactionMock)
+    await expect(
+      transactionDataSource.buy("123", -1, "BTC", "bitcoin", 1000)
+    ).rejects.toEqual(new UserInputError("Amount cannot be negative"))
+  })
 })
 
 describe("sell", () => {
-  it("should return transaction details", async () => {
-    const mockTransaction: Transaction = {
-      amount: 1,
-      id: "1",
-      symbol: "ABC",
-      timestamp: new Date(Date.now()),
-      type: TransactionType.SELL,
-      userId: "123",
-      assetId: "abc",
-      assetType: AssetType.CRYPTO,
-    }
-
-    mockCtx.prisma.transaction.create.mockResolvedValue(mockTransaction)
-
-    const returnedTransaction = await transactionDataSource.sell(
+  it("should return the saved transaction", async () => {
+    mockCtx.prisma.transaction.create.mockResolvedValue(transactionMock)
+    const result = await transactionDataSource.sell(
       "123",
       1,
-      "ABC",
-      "abc"
+      "BTC",
+      "bitcoin",
+      1000
     )
-
-    expect(returnedTransaction.id).toBe(mockTransaction.id)
+    expect(result).toMatchObject(transactionMock)
   })
-
-  // TODO: it("should throw if symbol is invalid")
 })
 
 describe("deposit", () => {
-  it("should return transaction details", async () => {
-    const mockTransaction: Transaction = {
-      amount: 1,
-      id: "1",
-      symbol: "PHP",
-      timestamp: new Date(Date.now()),
-      type: TransactionType.DEPOSIT,
-      userId: "123",
-      assetId: "philippine-peso",
-      assetType: AssetType.FIAT,
-    }
-
-    mockCtx.prisma.transaction.create.mockResolvedValue(mockTransaction)
-
-    const returnedTransaction = await transactionDataSource.deposit("123", 1)
-
-    expect(returnedTransaction.id).toBe(mockTransaction.id)
+  it("should return the saved transaction", async () => {
+    mockCtx.prisma.transaction.create.mockResolvedValue(transactionMock)
+    const result = await transactionDataSource.deposit("123", 1)
+    expect(result).toMatchObject(transactionMock)
   })
-
-  //   it("should throw if symbol is invalid", async () => {})
 })
 
 describe("withdraw", () => {
-  it("should return transaction details", async () => {
-    const mockTransaction: Transaction = {
-      amount: -1,
-      id: "1",
-      symbol: "PHP",
-      timestamp: new Date(Date.now()),
-      type: TransactionType.WITHDRAW,
-      userId: "123",
-      assetId: "philippine-peso",
-      assetType: AssetType.FIAT,
-    }
-
-    mockCtx.prisma.transaction.create.mockResolvedValue(mockTransaction)
-
-    const returnedTransaction = await transactionDataSource.withdraw("123", 1)
-
-    expect(returnedTransaction.id).toBe(mockTransaction.id)
+  it("should return the saved transaction", async () => {
+    mockCtx.prisma.transaction.create.mockResolvedValue(
+      transactionMockNegativeAmount
+    )
+    const result = await transactionDataSource.withdraw("123", 1)
+    expect(result).toMatchObject(transactionMockNegativeAmount)
   })
+})
 
-  // TODO: it("should throw if symbol is invalid")
+describe("getMyTransactions", () => {
+  it("should return a list of transaction", async () => {
+    mockCtx.prisma.transaction.findMany.mockResolvedValue([
+      transactionMock,
+      transactionMockNegativeAmount,
+    ])
+    const result = await transactionDataSource.getMyTransactions("123")
+    expect(Array.isArray(result)).toBe(true)
+  })
+})
+
+describe("getMyPortfolio", () => {
+  it("should return the portfolio summary", async () => {
+    mockCtx.prisma.$queryRaw.mockResolvedValue([
+      [{ sum: 100 }],
+      [
+        {
+          assetId: "bitcoin",
+          average: 100,
+          symbol: "BTC",
+          total: 1,
+        },
+      ],
+    ])
+    const result = await transactionDataSource.getMyPortfolio("123")
+    expect(result).toHaveProperty("buyingPower")
+  })
 })

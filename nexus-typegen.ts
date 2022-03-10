@@ -71,6 +71,8 @@ export interface NexusGenScalars {
 
 export interface NexusGenObjects {
   AssetAllocationOutput: { // root type
+    assetId: string; // String!
+    average: number; // Float!
     symbol: string; // String!
     total: number; // Float!
   }
@@ -93,6 +95,7 @@ export interface NexusGenObjects {
     timestamp: NexusGenScalars['DateTime']; // DateTime!
     type: NexusGenEnums['TransactionType']; // TransactionType!
     userId: string; // String!
+    valueUsd: number; // Float!
   }
   User: { // root type
     email: NexusGenScalars['EmailAddress']; // EmailAddress!
@@ -114,6 +117,8 @@ export type NexusGenAllTypes = NexusGenRootTypes & NexusGenScalars & NexusGenEnu
 
 export interface NexusGenFieldTypes {
   AssetAllocationOutput: { // field return type
+    assetId: string; // String!
+    average: number; // Float!
     symbol: string; // String!
     total: number; // Float!
   }
@@ -140,10 +145,8 @@ export interface NexusGenFieldTypes {
     getUser: NexusGenRootTypes['User'] | null; // User
     getUsers: NexusGenRootTypes['User'][]; // [User!]!
     logout: boolean | null; // Boolean
-    myPortfolio: NexusGenRootTypes['PortfolioOutput'] | null; // PortfolioOutput
     refreshToken: NexusGenRootTypes['AuthPayload'] | null; // AuthPayload
     test: string | null; // String
-    transactions: NexusGenRootTypes['Transaction'][]; // [Transaction!]!
   }
   Transaction: { // field return type
     amount: number; // Float!
@@ -155,6 +158,7 @@ export interface NexusGenFieldTypes {
     type: NexusGenEnums['TransactionType']; // TransactionType!
     user: NexusGenRootTypes['User']; // User!
     userId: string; // String!
+    valueUsd: number; // Float!
   }
   User: { // field return type
     email: NexusGenScalars['EmailAddress']; // EmailAddress!
@@ -166,6 +170,8 @@ export interface NexusGenFieldTypes {
 
 export interface NexusGenFieldTypeNames {
   AssetAllocationOutput: { // field return type name
+    assetId: 'String'
+    average: 'Float'
     symbol: 'String'
     total: 'Float'
   }
@@ -192,10 +198,8 @@ export interface NexusGenFieldTypeNames {
     getUser: 'User'
     getUsers: 'User'
     logout: 'Boolean'
-    myPortfolio: 'PortfolioOutput'
     refreshToken: 'AuthPayload'
     test: 'String'
-    transactions: 'Transaction'
   }
   Transaction: { // field return type name
     amount: 'Float'
@@ -207,6 +211,7 @@ export interface NexusGenFieldTypeNames {
     type: 'TransactionType'
     user: 'User'
     userId: 'String'
+    valueUsd: 'Float'
   }
   User: { // field return type name
     email: 'EmailAddress'
