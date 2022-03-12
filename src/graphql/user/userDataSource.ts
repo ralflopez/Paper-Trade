@@ -45,31 +45,40 @@ export class UserDataSource extends DataSource implements CrudDataSource {
     email: string,
     password: string
   ): Promise<User> {
+    let user: PrismaUser | null
     try {
-      const user = await this.prisma.user.findFirst({
+      user = await this.prisma.user.findFirst({
         where: {
           email,
         },
       })
-
-      if (!user) {
-        throw new UserInputError("User not found")
-      }
-
-      const valid = await bcrypt.compare(password, user.password)
-      if (!valid) {
-        throw new UserInputError("Incorrect Username / Password")
-      }
-
-      return {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        role: user?.role,
-      } as User
     } catch (e) {
-      throw new ApolloError("Unable to reach the database")
+      if (e instanceof PrismaClientKnownRequestError) {
+        const num = parseInt(e.code.substring(1))
+        if (num >= 1000 && num <= 1011)
+          throw new ApolloError("Cannot reach the database at the moment")
+        if (e.code == "P1012") throw new UserInputError("User not found")
+        else throw new ApolloError("Error creating new user: " + e.message)
+      } else {
+        throw new ApolloError("Error connecting to the database")
+      }
     }
+
+    if (!user) {
+      throw new UserInputError("User not found")
+    }
+
+    const valid = await bcrypt.compare(password, user.password)
+    if (!valid) {
+      throw new UserInputError("Incorrect Username / Password")
+    }
+
+    return {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user?.role,
+    } as User
   }
 
   async createOne(
@@ -90,9 +99,12 @@ export class UserDataSource extends DataSource implements CrudDataSource {
       })
     } catch (e) {
       if (e instanceof PrismaClientKnownRequestError) {
-        throw new UserInputError("User already exists")
+        const num = parseInt(e.code.substring(1))
+        if (num >= 1000 && num <= 1011)
+          throw new ApolloError("Cannot reach the database at the moment")
+        throw new ApolloError("Error creating new user: " + e.message)
       } else {
-        throw new UserInputError("Error creating new user")
+        throw new ApolloError("Error connecting to the database")
       }
     }
 
@@ -120,7 +132,14 @@ export class UserDataSource extends DataSource implements CrudDataSource {
         },
       })
     } catch (e) {
-      throw new ApolloError("Unable to reach the database")
+      if (e instanceof PrismaClientKnownRequestError) {
+        const num = parseInt(e.code.substring(1))
+        if (num >= 1000 && num <= 1011)
+          throw new ApolloError("Cannot reach the database at the moment")
+        throw new ApolloError("Error updating user: " + e.message)
+      } else {
+        throw new ApolloError("Error connecting to the database")
+      }
     }
   }
 
@@ -132,7 +151,14 @@ export class UserDataSource extends DataSource implements CrudDataSource {
         },
       })
     } catch (e) {
-      throw new UserInputError("User Not Found")
+      if (e instanceof PrismaClientKnownRequestError) {
+        const num = parseInt(e.code.substring(1))
+        if (num >= 1000 && num <= 1011)
+          throw new ApolloError("Cannot reach the database at the moment")
+        throw new ApolloError("Error deleting user: " + e.message)
+      } else {
+        throw new ApolloError("Error connecting to the database")
+      }
     }
   }
 }
