@@ -45,27 +45,31 @@ export class UserDataSource extends DataSource implements CrudDataSource {
     email: string,
     password: string
   ): Promise<User> {
-    const user = await this.prisma.user.findFirst({
-      where: {
-        email,
-      },
-    })
+    try {
+      const user = await this.prisma.user.findFirst({
+        where: {
+          email,
+        },
+      })
 
-    if (!user) {
-      throw new UserInputError("User not found")
+      if (!user) {
+        throw new UserInputError("User not found")
+      }
+
+      const valid = await bcrypt.compare(password, user.password)
+      if (!valid) {
+        throw new UserInputError("Incorrect Username / Password")
+      }
+
+      return {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user?.role,
+      } as User
+    } catch (e) {
+      throw new ApolloError("Unable to reach the database")
     }
-
-    const valid = await bcrypt.compare(password, user.password)
-    if (!valid) {
-      throw new UserInputError("Incorrect Username / Password")
-    }
-
-    return {
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      role: user?.role,
-    } as User
   }
 
   async createOne(
@@ -105,15 +109,19 @@ export class UserDataSource extends DataSource implements CrudDataSource {
     password: string,
     name: string
   ): Promise<User> {
-    const hashed = await bcrypt.hash(password, 10)
-    return await this.prisma.user.update({
-      where: { id },
-      data: {
-        email,
-        name,
-        password: hashed,
-      },
-    })
+    try {
+      const hashed = await bcrypt.hash(password, 10)
+      return await this.prisma.user.update({
+        where: { id },
+        data: {
+          email,
+          name,
+          password: hashed,
+        },
+      })
+    } catch (e) {
+      throw new ApolloError("Unable to reach the database")
+    }
   }
 
   async deleteOne(id: string): Promise<User> {
