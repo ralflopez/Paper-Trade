@@ -82,7 +82,7 @@ export interface NexusGenObjects {
   }
   Mutation: {};
   PortfolioOutput: { // root type
-    assetAllocation: NexusGenRootTypes['AssetAllocationOutput'][]; // [AssetAllocationOutput!]!
+    allocation: NexusGenRootTypes['AssetAllocationOutput'][]; // [AssetAllocationOutput!]!
     buyingPower: number; // Float!
   }
   Query: {};
@@ -137,7 +137,7 @@ export interface NexusGenFieldTypes {
     withdraw: NexusGenRootTypes['Transaction'] | null; // Transaction
   }
   PortfolioOutput: { // field return type
-    assetAllocation: NexusGenRootTypes['AssetAllocationOutput'][]; // [AssetAllocationOutput!]!
+    allocation: NexusGenRootTypes['AssetAllocationOutput'][]; // [AssetAllocationOutput!]!
     buyingPower: number; // Float!
   }
   Query: { // field return type
@@ -145,8 +145,10 @@ export interface NexusGenFieldTypes {
     getUser: NexusGenRootTypes['User'] | null; // User
     getUsers: NexusGenRootTypes['User'][]; // [User!]!
     logout: boolean | null; // Boolean
+    myPortfolio: NexusGenRootTypes['PortfolioOutput'] | null; // PortfolioOutput
     refreshToken: NexusGenRootTypes['AuthPayload'] | null; // AuthPayload
     test: string | null; // String
+    transactions: NexusGenRootTypes['Transaction'][]; // [Transaction!]!
   }
   Transaction: { // field return type
     amount: number; // Float!
@@ -190,7 +192,7 @@ export interface NexusGenFieldTypeNames {
     withdraw: 'Transaction'
   }
   PortfolioOutput: { // field return type name
-    assetAllocation: 'AssetAllocationOutput'
+    allocation: 'AssetAllocationOutput'
     buyingPower: 'Float'
   }
   Query: { // field return type name
@@ -198,8 +200,10 @@ export interface NexusGenFieldTypeNames {
     getUser: 'User'
     getUsers: 'User'
     logout: 'Boolean'
+    myPortfolio: 'PortfolioOutput'
     refreshToken: 'AuthPayload'
     test: 'String'
+    transactions: 'Transaction'
   }
   Transaction: { // field return type name
     amount: 'Float'

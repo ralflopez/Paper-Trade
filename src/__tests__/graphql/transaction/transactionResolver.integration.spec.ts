@@ -74,6 +74,31 @@ const assetAllocationMock: AssetAllocationQuery = {
   total: 1,
 }
 
+const transactionsMock: Transaction[] = [
+  {
+    amount: 100,
+    assetId: "united-states-dollar",
+    assetType: AssetType.FIAT,
+    id: "1234",
+    symbol: "USD",
+    timestamp: new Date(Date.now()),
+    type: TransactionType.DEPOSIT,
+    userId: "123",
+    valueUsd: 1,
+  },
+  {
+    amount: 50,
+    assetId: "united-states-dollar",
+    assetType: AssetType.FIAT,
+    id: "1234",
+    symbol: "USD",
+    timestamp: new Date(Date.now()),
+    type: TransactionType.WITHDRAW,
+    userId: "123",
+    valueUsd: 1,
+  },
+]
+
 // helpers
 function createTransaction(
   assetType: AssetType,
@@ -257,5 +282,60 @@ describe("withdraw", () => {
     expect(result.data.withdraw).toEqual(
       expect.objectContaining({ amount: -1, symbol: "USD" })
     )
+  })
+})
+
+describe("transactions", () => {
+  it("should return an array", async () => {
+    // given
+    transactionDataSource.getMyTransactions = jest
+      .fn()
+      .mockResolvedValueOnce(transactionsMock)
+
+    // when
+    const response: Response = await createRequest({
+      query: `
+        query Transactions {
+          transactions {
+            amount
+            assetId
+            type
+          }
+        }
+      `,
+    })
+
+    // then
+    const result = JSON.parse(response.text)
+
+    expect(Array.isArray(result.data.transactions)).toBeTruthy()
+  })
+})
+
+describe("myPortfolio", () => {
+  it("should return a portfolio summary type", async () => {
+    // given
+    transactionDataSource.getMyPortfolio = jest
+      .fn()
+      .mockResolvedValue(portfolioSummaryMock)
+
+    // when
+    const response: Response = await createRequest({
+      query: `
+        query MyPortfolio {
+          myPortfolio {
+            buyingPower
+            allocation {
+              assetId
+            }
+          }
+        }
+      `,
+    })
+
+    // then
+    const result = JSON.parse(response.text)
+    expect(result.data.myPortfolio).toHaveProperty("allocation")
+    expect(result.data.myPortfolio).toHaveProperty("buyingPower")
   })
 })

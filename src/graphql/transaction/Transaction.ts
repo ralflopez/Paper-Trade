@@ -42,7 +42,7 @@ export const PortfolioOutput = objectType({
   name: "PortfolioOutput",
   definition(t) {
     t.nonNull.float("buyingPower")
-    t.nonNull.list.nonNull.field("assetAllocation", {
+    t.nonNull.list.nonNull.field("allocation", {
       type: "AssetAllocationOutput",
     })
   },

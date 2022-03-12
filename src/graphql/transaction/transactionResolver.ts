@@ -7,32 +7,32 @@ import { list, mutationField, nonNull, queryField } from "nexus"
 import { Context } from "../../config/context"
 import { Transaction } from "@prisma/client"
 // Query
-// export const transactionsQuery = queryField("transactions", {
-//   type: nonNull(list(nonNull("Transaction"))),
-//   description: "Returns all transactions in the ledger",
-//   resolve: async (_parent, _args, { user, dataSources }: Context) => {
-//     // validation
-//     if (!user?.id) throw new AuthenticationError("You are not logged in")
+export const transactionsQuery = queryField("transactions", {
+  type: nonNull(list(nonNull("Transaction"))),
+  description: "Returns all transactions in the ledger",
+  resolve: async (_parent, _args, { user, dataSources }: Context) => {
+    // validation
+    if (!user?.id) throw new AuthenticationError("You are not logged in")
 
-//     // read from database
-//     const transactions = await dataSources.transaction.getMyTransactions(
-//       user.id
-//     )
-//     return transactions
-//   },
-// })
+    // read from database
+    const transactions = await dataSources.transaction.getMyTransactions(
+      user.id
+    )
+    return transactions
+  },
+})
 
-// export const MyPortfolioQuery = queryField("myPortfolio", {
-//   type: "PortfolioOutput",
-//   description: "a summary of all assets owned by the user",
-//   resolve: async (_parent, _args, { user, dataSources }: Context) => {
-//     // validation
-//     if (!user?.id) throw new AuthenticationError("You are not logged in")
+export const MyPortfolioQuery = queryField("myPortfolio", {
+  type: "PortfolioOutput",
+  description: "a summary of all assets owned by the user",
+  resolve: async (_parent, _args, { user, dataSources }: Context) => {
+    // validation
+    if (!user?.id) throw new AuthenticationError("You are not logged in")
 
-//     const myPortfolio = await dataSources.transaction.getMyPortfolio(user.id)
-//     return myPortfolio
-//   },
-// })
+    const myPortfolio = await dataSources.transaction.getMyPortfolio(user.id)
+    return myPortfolio
+  },
+})
 
 // Mutation
 export const BuyMutation = mutationField("buy", {
