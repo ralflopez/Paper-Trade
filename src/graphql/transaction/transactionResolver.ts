@@ -55,9 +55,9 @@ export const BuyMutation = mutationField("buy", {
       assetId
     )
     if (!asset) throw new UserInputError("Asset not found")
-    const cryptoAmount = amount / Number(asset.priceUsd)
+    const cryptoAmount = Number(asset.priceUsd)
 
-    const valueUsd = parseFloat(asset.priceUsd)
+    const valueUsd = amount * Number(asset.priceUsd)
 
     // validate enough funds
     const portfolio: PortfolioSummary =
