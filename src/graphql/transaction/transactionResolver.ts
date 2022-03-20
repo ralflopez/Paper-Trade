@@ -55,9 +55,8 @@ export const BuyMutation = mutationField("buy", {
       assetId
     )
     if (!asset) throw new UserInputError("Asset not found")
-    const cryptoAmount = Number(asset.priceUsd)
 
-    const valueUsd = amount * Number(asset.priceUsd)
+    const valueUsd = Number(asset.priceUsd)
 
     // validate enough funds
     const portfolio: PortfolioSummary =
@@ -68,7 +67,7 @@ export const BuyMutation = mutationField("buy", {
     // write to database
     const result: Transaction = await dataSources.transaction.buy(
       user.id,
-      cryptoAmount,
+      amount,
       asset.symbol,
       asset.id,
       valueUsd
