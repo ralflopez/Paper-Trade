@@ -10,6 +10,7 @@
     "dev:debug": "ts-node --transpile-only --inspect src/index.ts",
     "nexus:generate": "ts-node --transpile-only src/schema.ts",
     "prisma:generate": "npx prisma generate",
+    "prisma:db:push": "npx prisma db push",
     "schema:generate": "npm run prisma:generate && npm run nexus:generate",
     "dev:generate": "npm run schema:generate && npm run dev"
   },
