@@ -12,8 +12,6 @@ RUN npm ci
 
 COPY . .
 
-RUN npm run prisma:db:push
-
 RUN npm run schema:generate
 
 RUN npm run build
