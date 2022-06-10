@@ -6,9 +6,6 @@ import { ApolloServerPluginDrainHttpServer } from "apollo-server-core"
 import express, { Express } from "express"
 import http, { Server } from "http"
 import cookieParser from "cookie-parser"
-import dotenv from "dotenv"
-
-dotenv.config()
 
 export function createApolloServer() {
   const app = express()
